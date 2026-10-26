@@ -1,0 +1,2285 @@
+<!doctype html>
+<html lang="es">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Taller de Skills</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2214%22%20fill%3D%22%232f5d8a%22/%3E%3Cpath%20d%3D%22M14%2020h14l5%205h17v23H14z%22%20fill%3D%22%23dbe6f2%22/%3E%3Cpath%20d%3D%22M22%2032h20M22%2038h14%22%20stroke%3D%22%232f5d8a%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,650;12..96,700&family=JetBrains+Mono:wght@400;500;600&family=Source+Sans+3:wght@400;600;700&display=swap">
+<style>
+/* Layout: banda de cabecera a todo el ancho + columna de lectura con indice lateral pegajoso */
+:root {
+  --bg: #f2f4f7;
+  --surface: #ffffff;
+  --surface-2: #e8ecf2;
+  --ink: #18212c;
+  --muted: #586473;
+  --line: #d6dce5;
+  --accent: #2f5d8a;
+  --accent-soft: #dbe6f2;
+  --dirty: #b8711d;
+  --dirty-soft: #f6e7d2;
+  --ok: #2c7651;
+  --ok-soft: #dcefe4;
+  --bad: #b03f36;
+  --bad-soft: #f7e0de;
+  --code-bg: #141b24;
+  --code-fg: #dbe3ee;
+  --code-dim: #8794a6;
+  --code-key: #8fbbe6;
+  --code-str: #e2b77a;
+  --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", Consolas, "Courier New", monospace;
+  --radius: 8px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f141a; --surface: #161d26; --surface-2: #1e2732; --ink: #e5eaf1; --muted: #9ba7b6; --line: #2a3441;
+    --accent: #7eb0e0; --accent-soft: #1d3248; --dirty: #e0a35a; --dirty-soft: #3a2a15; --ok: #64c393; --ok-soft: #173326;
+    --bad: #e7837a; --bad-soft: #3d1d1a; --code-bg: #0a0e13; --code-fg: #dbe3ee; --code-dim: #7c899b; --code-key: #8fbbe6; --code-str: #e2b77a;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f141a; --surface: #161d26; --surface-2: #1e2732; --ink: #e5eaf1; --muted: #9ba7b6; --line: #2a3441;
+  --accent: #7eb0e0; --accent-soft: #1d3248; --dirty: #e0a35a; --dirty-soft: #3a2a15; --ok: #64c393; --ok-soft: #173326;
+  --bad: #e7837a; --bad-soft: #3d1d1a; --code-bg: #0a0e13; --code-fg: #dbe3ee; --code-dim: #7c899b; --code-key: #8fbbe6; --code-str: #e2b77a;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+img { max-width: 100%; height: auto; }
+body {
+  background: var(--bg); color: var(--ink);
+  font-family: var(--font-body); font-size: 17px; line-height: 1.6;
+  margin: 0;
+}
+h1, h2, h3, h4 { font-family: var(--font-display); line-height: 1.15; text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 700; letter-spacing: -0.02em; }
+h2 { font-size: clamp(1.5rem, 3vw, 2rem); font-weight: 650; letter-spacing: -0.01em; }
+h3 { font-size: 1.2rem; font-weight: 600; }
+p { margin: 0; max-width: 68ch; }
+a { color: var(--accent); }
+code, kbd { font-family: var(--font-mono); font-size: 0.86em; }
+:not(pre) > code { background: var(--surface-2); padding: 0.1em 0.35em; border-radius: 4px; }
+kbd { border: 1px solid var(--line); border-bottom-width: 2px; padding: 0.05em 0.4em; border-radius: 4px; background: var(--surface); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.gutter { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.wrap { max-width: 1180px; margin: 0 auto; }
+
+/* Cabecera */
+.masthead { background: var(--surface); border-bottom: 1px solid var(--line); }
+.masthead .wrap { padding-block: 48px 40px; display: grid; gap: 28px; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); align-items: center; }
+.eyebrow { font-family: var(--font-mono); font-size: 0.76rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+.lede { font-size: 1.15rem; color: var(--muted); margin-top: 14px; }
+.meta-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+.chip { font-family: var(--font-mono); font-size: 0.76rem; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); background: var(--bg); }
+
+/* Cuerpo con indice */
+.layout { display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 48px; padding-block: 40px 80px; }
+.toc { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 20px); align-self: start; display: grid; gap: 4px; }
+.toc a { display: grid; grid-template-columns: 28px 1fr; gap: 6px; text-decoration: none; color: var(--muted); font-size: 0.93rem; padding: 6px 8px; border-radius: 6px; }
+.toc a span:first-child { font-family: var(--font-mono); font-size: 0.78rem; padding-top: 2px; }
+.toc a:hover { background: var(--surface-2); color: var(--ink); }
+.toc a.activo { color: var(--accent); background: var(--accent-soft); }
+.progreso { height: 3px; background: var(--line); border-radius: 2px; margin: 8px 8px 14px; overflow: hidden; }
+.progreso i { display: block; height: 100%; width: 0; background: var(--accent); transition: width 0.2s; }
+main { display: grid; gap: 72px; min-width: 0; }
+section { display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; scroll-margin-top: 24px; min-width: 0; }
+section > *, .hu-dinamica > *, .concepto > * { min-width: 0; }
+.sec-num { font-family: var(--font-mono); font-size: 0.8rem; color: var(--accent); letter-spacing: 0.08em; }
+.muted { color: var(--muted); }
+
+/* Bloques */
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px; min-width: 0; }
+.grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.nota { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 12px 16px; border-radius: 0 6px 6px 0; }
+.nota.alerta { border-color: var(--dirty); background: var(--dirty-soft); }
+ol.pasos, ul.lista { margin: 0; padding-left: 1.3em; display: grid; gap: 8px; max-width: 68ch; }
+.tabla-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 0.94rem; }
+th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-family: var(--font-mono); font-size: 0.74rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); background: var(--surface-2); }
+tr:last-child td { border-bottom: 0; }
+td.num { font-variant-numeric: tabular-nums; }
+
+/* Codigo */
+.code { position: relative; background: var(--code-bg); color: var(--code-fg); border-radius: var(--radius); min-width: 0; }
+.code-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 8px 12px 8px 16px; border-bottom: 1px solid #ffffff14; font-family: var(--font-mono); font-size: 0.76rem; color: var(--code-dim); }
+.code pre { margin: 0; padding: 16px; overflow-x: auto; font-family: var(--font-mono); font-size: 0.82rem; line-height: 1.55; tab-size: 4; }
+.code pre.alto { max-height: 420px; overflow-y: auto; }
+.k { color: var(--code-key); } .s { color: var(--code-str); } .c { color: var(--code-dim); }
+
+/* Botones */
+.btn { font: 600 0.92rem var(--font-body); border: 1px solid var(--line); background: var(--surface); color: var(--ink); padding: 8px 14px; border-radius: 6px; cursor: pointer; transition: background 0.15s, border-color 0.15s, transform 0.1s; }
+.btn:hover { border-color: var(--accent); }
+.btn:active { transform: translateY(1px); }
+.btn.primario { background: var(--accent); color: var(--surface); border-color: var(--accent); }
+.btn.copiar { font: 500 0.74rem var(--font-mono); padding: 4px 10px; background: transparent; color: var(--code-fg); border-color: #ffffff2a; }
+.btn.copiar.hecho { color: var(--ok); border-color: var(--ok); }
+.btn-row { display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* Estados */
+.estado { font-family: var(--font-mono); font-size: 0.72rem; font-weight: 600; padding: 2px 8px; border-radius: 4px; white-space: nowrap; }
+.estado.pasa { color: var(--ok); background: var(--ok-soft); }
+.estado.falla { color: var(--bad); background: var(--bad-soft); }
+.estado.aviso { color: var(--dirty); background: var(--dirty-soft); }
+
+/* Formularios */
+label { font-weight: 600; font-size: 0.9rem; }
+input[type="text"], select, textarea { font: inherit; font-size: 0.95rem; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; width: 100%; }
+textarea { font-family: var(--font-mono); font-size: 0.82rem; line-height: 1.5; resize: vertical; }
+
+/* Pestanas */
+.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); overflow-x: auto; }
+.tab { font: 600 0.92rem var(--font-body); background: none; border: 0; border-bottom: 2px solid transparent; padding: 10px 14px; color: var(--muted); cursor: pointer; white-space: nowrap; }
+.tab[aria-selected="true"] { color: var(--accent); border-color: var(--accent); }
+.tab-panel { padding-top: 18px; display: grid; gap: 16px; }
+
+/* Arbol de carpetas */
+.arbol { font-family: var(--font-mono); font-size: 0.84rem; line-height: 1.75; background: var(--surface-2); border-radius: var(--radius); padding: 14px 16px; overflow-x: auto; white-space: pre; }
+.arbol b { color: var(--accent); font-weight: 600; }
+
+@keyframes entrar { from { opacity: 0.25; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@keyframes pulso { 0%, 100% { box-shadow: 0 0 0 0 var(--accent-soft); } 50% { box-shadow: 0 0 0 6px var(--accent-soft); } }
+
+@media (max-width: 900px) {
+  .masthead .wrap { grid-template-columns: minmax(0, 1fr); padding-block: 32px 28px; }
+  .layout { grid-template-columns: minmax(0, 1fr); gap: 24px; padding-block: 0 60px; }
+  .toc { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; display: flex; overflow-x: auto; background: var(--bg); padding-block: 10px; margin: 0 calc(-1 * max(16px, env(safe-area-inset-left, 0px))); padding-inline: max(16px, env(safe-area-inset-left, 0px)); border-bottom: 1px solid var(--line); }
+  .toc a { white-space: nowrap; display: flex; }
+  .progreso { display: none; }
+  .grid-2, .grid-3 { grid-template-columns: minmax(0, 1fr); }
+  main { gap: 56px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+}
+
+:root { --marca: #d9480f; --marca-suave: #ffe8d9; --c-skill: #2f5d8a; --c-ref: #2c7651; --c-scr: #b8711d; --c-ast: #7a4fb0; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --marca: #ff8a4c; --marca-suave: #3b2214; --c-skill: #7eb0e0; --c-ref: #64c393; --c-scr: #e0a35a; --c-ast: #b99ae6; } }
+:root[data-theme="dark"] { --marca: #ff8a4c; --marca-suave: #3b2214; --c-skill: #7eb0e0; --c-ref: #64c393; --c-scr: #e0a35a; --c-ast: #b99ae6; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+
+.chat { display: grid; gap: 10px; background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 18px; font-size: 0.95rem; align-content: start; }
+.msg { padding: 10px 14px; border-radius: 10px; max-width: 92%; animation: entrar 0.5s both; }
+.msg.yo { justify-self: end; background: var(--accent); color: var(--surface); display: grid; gap: 8px; }
+.msg.ia { background: var(--surface); border: 1px solid var(--line); }
+.msg.sistema { justify-self: start; font-family: var(--font-mono); font-size: 0.76rem; color: var(--muted); background: none; padding: 2px 4px; }
+.msg.sistema b { color: var(--accent); font-weight: 600; }
+.adjunto { display: inline-flex; align-items: center; gap: 8px; justify-self: end; font-family: var(--font-mono); font-size: 0.76rem; background: var(--surface); color: var(--ink); border-radius: 6px; padding: 6px 10px; }
+.adjunto::before { content: "FOTO"; font-weight: 700; font-size: 0.62rem; color: var(--surface); background: var(--c-ast); padding: 2px 5px; border-radius: 3px; }
+.cabecera-chat .msg:nth-child(2) { animation-delay: 0.6s; } .cabecera-chat .msg:nth-child(3) { animation-delay: 1.2s; } .cabecera-chat .msg:nth-child(4) { animation-delay: 1.8s; }
+
+.versus { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.versus .panel { display: grid; gap: 10px; align-content: start; }
+.versus .panel.bueno { border-color: var(--ok); }
+.versus h3 { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.etq { font-family: var(--font-mono); font-size: 0.7rem; font-weight: 600; padding: 2px 8px; border-radius: 4px; background: var(--surface-2); color: var(--muted); }
+.bueno .etq { background: var(--ok-soft); color: var(--ok); }
+
+.sim { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 18px; }
+.niveles { display: grid; gap: 12px; min-width: 0; align-content: start; }
+.nivel { border: 1px dashed var(--line); border-radius: var(--radius); padding: 14px 16px; display: grid; gap: 10px; transition: border-color 0.3s, background 0.3s, opacity 0.3s; opacity: 0.5; }
+.nivel.on { opacity: 1; border-style: solid; border-color: var(--accent); background: var(--surface); }
+.nivel-titulo { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; font-family: var(--font-mono); font-size: 0.76rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+.mini-skills { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.mini { font-size: 0.86rem; border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; background: var(--bg); transition: border-color 0.3s, transform 0.3s, opacity 0.3s; }
+.mini b { font-family: var(--font-mono); font-size: 0.8rem; display: block; }
+.mini.revisando { animation: escanear 0.9s ease-in-out 2; }
+.mini.elegida { border-color: var(--accent); background: var(--accent-soft); transform: translateY(-2px); }
+.mini.descartada { opacity: 0.35; }
+@keyframes escanear { 50% { border-color: var(--marca); box-shadow: 0 0 0 3px var(--marca-suave); } }
+.lado { display: grid; gap: 12px; align-content: start; min-width: 0; }
+.simchat { min-height: 210px; }
+.medidor { display: grid; gap: 6px; }
+.medidor-barra { height: 14px; border-radius: 7px; background: var(--surface-2); overflow: hidden; }
+.medidor-barra i { display: block; height: 100%; width: 4%; background: var(--accent); transition: width 0.7s ease; }
+.medidor-txt { display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 0.76rem; color: var(--muted); }
+.paso-actual { font-family: var(--font-mono); font-size: 0.76rem; color: var(--accent); letter-spacing: 0.06em; text-transform: uppercase; }
+.narracion { min-height: 4.8em; }
+.observa { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.observa div { border: 1px solid var(--line); border-radius: 6px; padding: 10px 12px; font-size: 0.9rem; background: var(--surface); }
+.observa b { display: block; font-family: var(--font-mono); font-size: 0.74rem; color: var(--accent); }
+
+figure { margin: 0; display: grid; gap: 8px; min-width: 0; }
+figcaption { font-size: 0.9rem; color: var(--muted); }
+.captura { position: relative; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: var(--surface); box-shadow: 0 8px 24px -16px #0006; }
+.captura img { display: block; width: 100%; height: auto; }
+.marca { position: absolute; border: 3px solid var(--marca); border-radius: 8px; box-shadow: 0 0 0 4px var(--marca-suave); animation: latido 1.8s ease-in-out infinite; pointer-events: none; }
+.marca span { position: absolute; top: -14px; left: -14px; width: 26px; height: 26px; border-radius: 50%; background: var(--marca); color: #fff; font: 700 0.8rem var(--font-mono); display: grid; place-items: center; }
+@keyframes latido { 50% { box-shadow: 0 0 0 8px var(--marca-suave); } }
+
+.recorrido { display: grid; gap: 14px; }
+.recorrido-pasos { display: flex; gap: 6px; flex-wrap: wrap; }
+.recorrido-pasos button { font: 600 0.84rem var(--font-body); border: 1px solid var(--line); background: var(--surface); color: var(--muted); border-radius: 999px; padding: 6px 14px; cursor: pointer; }
+.recorrido-pasos button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--surface); }
+.recorrido-cuerpo { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+.recorrido-texto { display: grid; gap: 10px; }
+.recorrido-texto h3 { font-size: 1.15rem; }
+
+/* Carpetas: cocina */
+.roles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.rol { border: 1px solid var(--line); border-top: 5px solid var(--c); border-radius: var(--radius); background: var(--surface); padding: 14px; display: grid; gap: 8px; align-content: start; }
+.rol h3 { font-family: var(--font-mono); font-size: 1rem; color: var(--c); }
+.rol .verbo { font-family: var(--font-mono); font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; padding: 3px 8px; border-radius: 4px; justify-self: start; background: var(--surface-2); color: var(--c); }
+.rol p { font-size: 0.92rem; }
+.rol small { color: var(--muted); font-size: 0.86rem; }
+.r-skill { --c: var(--c-skill); } .r-ref { --c: var(--c-ref); } .r-scr { --c: var(--c-scr); } .r-ast { --c: var(--c-ast); }
+.clasificar { display: grid; gap: 8px; }
+.clasificar .fila { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; align-items: center; border: 1px solid var(--line); border-radius: 6px; padding: 8px 12px; background: var(--surface); transition: background 0.2s, border-color 0.2s; }
+.clasificar .fila.bien { border-color: var(--ok); background: var(--ok-soft); }
+.clasificar .fila.mal { border-color: var(--bad); background: var(--bad-soft); }
+.clasificar .opciones { display: flex; gap: 4px; flex-wrap: wrap; }
+.clasificar .opciones button { font: 500 0.76rem var(--font-mono); border: 1px solid var(--line); background: var(--bg); color: var(--ink); border-radius: 4px; padding: 4px 8px; cursor: pointer; }
+.clasificar .porque { grid-column: 1 / -1; font-size: 0.88rem; }
+
+.anatomia { display: grid; gap: 14px; }
+.anatomia pre { font-size: 0.86rem; white-space: pre-wrap; overflow-wrap: anywhere; }
+.parte { cursor: pointer; border-radius: 3px; transition: background 0.2s; }
+.parte:hover, .parte.sel { background: #ffffff1f; outline: 1px solid var(--code-key); }
+.explica { border-left: 4px solid var(--accent); min-height: 7em; display: grid; gap: 6px; align-content: start; }
+.leyenda { display: flex; flex-wrap: wrap; gap: 6px; }
+.leyenda button { font: 500 0.8rem var(--font-mono); background: var(--surface-2); border: 1px solid transparent; color: var(--ink); border-radius: 999px; padding: 4px 12px; cursor: pointer; }
+.leyenda button:hover, .leyenda button.sel { border-color: var(--accent); color: var(--accent); }
+.c-ref-t { color: #7ee2b0; font-weight: 600; } .c-scr-t { color: #f2c27a; font-weight: 600; } .c-ast-t { color: #c9a8f5; font-weight: 600; }
+.arbol .c-skill { color: var(--c-skill); font-weight: 600; } .arbol .c-ref { color: var(--c-ref); font-weight: 600; } .arbol .c-scr { color: var(--c-scr); font-weight: 600; } .arbol .c-ast { color: var(--c-ast); font-weight: 600; }
+
+/* Práctica */
+.antes-despues { display: grid; grid-template-columns: minmax(0, 0.55fr) auto minmax(0, 1.6fr); gap: 16px; align-items: center; }
+.flecha-grande { font-family: var(--font-mono); font-size: 0.8rem; color: var(--accent); text-align: center; display: grid; gap: 4px; justify-items: center; }
+.flecha-grande i { width: 48px; height: 3px; background: var(--accent); position: relative; animation: avanzar 1.6s ease-in-out infinite; }
+.flecha-grande i::after { content: ""; position: absolute; right: -2px; top: -5px; border: 6px solid transparent; border-left: 9px solid var(--accent); }
+@keyframes avanzar { 50% { transform: translateX(6px); } }
+.flujo-diseno { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; counter-reset: fd; }
+.flujo-diseno div { padding: 14px; border: 1px solid var(--line); background: var(--surface); display: grid; gap: 4px; align-content: start; }
+.flujo-diseno div + div { border-left: 0; }
+.flujo-diseno div:first-child { border-radius: var(--radius) 0 0 var(--radius); }
+.flujo-diseno div:last-child { border-radius: 0 var(--radius) var(--radius) 0; }
+.flujo-diseno b { font-size: 0.98rem; }
+.flujo-diseno span { font-size: 0.86rem; color: var(--muted); }
+.flujo-diseno div::before { counter-increment: fd; content: counter(fd); width: 26px; height: 26px; border-radius: 50%; background: var(--accent); color: var(--surface); font: 700 0.8rem var(--font-mono); display: grid; place-items: center; }
+.quien { font-family: var(--font-mono); font-size: 0.7rem; font-weight: 600; padding: 2px 8px; border-radius: 4px; justify-self: start; }
+.quien.tu { background: var(--accent-soft); color: var(--accent); }
+.quien.claude { background: var(--marca-suave); color: var(--marca); }
+.ficha { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
+.ficha-form { display: grid; gap: 12px; align-content: start; }
+.ficha-form > div { display: grid; gap: 4px; }
+.ficha-form textarea { min-height: 120px; font-size: 0.8rem; }
+.ficha-form .ayuda { font-size: 0.84rem; color: var(--muted); font-weight: 400; }
+.ficha-salida { display: grid; gap: 12px; align-content: start; min-width: 0; }
+.revisar-lista { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.revisar-lista label { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 8px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); font-weight: 400; cursor: pointer; }
+.revisar-lista label:has(input:checked) { border-color: var(--ok); background: var(--ok-soft); }
+.fotos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.foto { display: grid; grid-template-columns: 130px minmax(0, 1fr); gap: 14px; align-items: start; }
+.foto img { width: 100%; height: auto; border-radius: 6px; border: 1px solid var(--line); }
+.foto .espera { border-left: 4px solid var(--ok); padding-left: 10px; font-size: 0.9rem; }
+.foto .espera.mal { border-color: var(--bad); }
+.kit { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+.kit .arbol { font-size: 0.8rem; }
+.reto { padding: 0; }
+.reto summary { cursor: pointer; display: grid; gap: 4px; padding: 18px 20px; list-style: none; }
+.reto summary::-webkit-details-marker { display: none; }
+.reto summary b { font-size: 1.08rem; }
+.reto summary b::after { content: " +"; color: var(--accent); }
+.reto[open] summary b::after { content: " −"; }
+.reto summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.reto-etq { font: 600 0.72rem var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+.reto-cuerpo { display: grid; gap: 18px; padding: 0 20px 22px; border-top: 1px solid var(--line); padding-top: 18px; min-width: 0; }
+.asistente { display: grid; gap: 16px; padding: 18px; scroll-margin-top: 24px; }
+.asistente .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.asistente ::placeholder { color: var(--muted); opacity: 0.75; font-style: italic; }
+.asis-pasos { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.asis-pasos button { font: 600 0.82rem var(--font-body); border: 1px solid var(--line); background: var(--surface); color: var(--muted); border-radius: 999px; padding: 5px 12px; cursor: pointer; }
+.asis-pasos button:disabled { opacity: 0.45; cursor: not-allowed; }
+.asis-pasos button.hecho { border-color: var(--ok); color: var(--ok); }
+.asis-pasos button[aria-current="step"] { background: var(--accent); color: var(--surface); border-color: var(--accent); }
+.asis-cuerpo { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 280px); gap: 20px; align-items: start; }
+.asis-paso { display: grid; gap: 14px; min-width: 0; }
+.asis-paso h3 { font-size: 1.25rem; }
+.asis-lado { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 20px); display: grid; gap: 8px; min-width: 0; }
+.asis-lado h4 { font-size: 0.95rem; }
+.asis-arbol { font-size: 0.72rem; line-height: 1.7; }
+.asis-arbol i { color: var(--muted); font-style: normal; font-size: 0.7rem; }
+.campo-asis { display: grid; gap: 6px; }
+.campo-asis .ayuda { font-weight: 400; color: var(--muted); font-size: 0.84rem; }
+.campo-asis textarea { min-height: 150px; }
+[id$="as-skill"], [id$="as-scrTexto"], [id$="as-astTexto"] { min-height: 280px; }
+.cuando { border: 1px solid var(--line); border-left: 5px solid var(--c); border-radius: var(--radius); padding: 14px 16px; background: var(--surface); display: grid; gap: 8px; }
+.cuando.c-r { --c: var(--c-ref); } .cuando.c-s { --c: var(--c-scr); } .cuando.c-a { --c: var(--c-ast); }
+.cuando h4 { color: var(--c); font-family: var(--font-mono); font-size: 0.92rem; }
+.cuando dl { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 6px 12px; margin: 0; font-size: 0.92rem; }
+.cuando dt { font-weight: 700; }
+.cuando dd { margin: 0; }
+.pregunta-asis { border: 0; margin: 0; padding: 0; display: grid; gap: 8px; min-width: 0; }
+.pregunta-asis legend { font-weight: 700; font-size: 1rem; padding: 0; margin-bottom: 8px; }
+.opciones-asis { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 8px; }
+.opciones-asis label { display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: 8px; align-items: start; padding: 10px 12px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); font-weight: 600; cursor: pointer; }
+.opciones-asis label:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+.opciones-asis input { margin-top: 4px; }
+.tabla-rutas table { min-width: 820px; }
+.tabla-rutas td:first-child, .tabla-rutas td:nth-child(2) { white-space: nowrap; }
+.traza td:first-child { font-family: var(--font-mono); color: var(--accent); width: 32px; }
+.traza td:nth-child(2) { white-space: nowrap; font-size: 0.86rem; color: var(--muted); }
+.traza table { min-width: 760px; }
+.ruta-clase .reto-cuerpo .code { margin-top: 2px; }
+.graficas-ejemplo { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.graficas-ejemplo img { border: 1px solid var(--line); border-radius: 6px; background: #fff; }
+@media (max-width: 900px) { .graficas-ejemplo { grid-template-columns: minmax(0, 1fr); } }
+.sug-asis { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 10px; align-items: center; background: var(--ok-soft); border: 1px dashed var(--ok); border-radius: 6px; padding: 8px 10px; margin: -4px 0 0; }
+.sug-asis .sug-etq { grid-column: 1 / -1; font: 600 0.7rem var(--font-mono); color: var(--ok); text-transform: uppercase; letter-spacing: 0.04em; }
+.sug-asis code { background: none; padding: 0; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 0.82rem; color: var(--ink); }
+.sug-radio { display: grid; margin-top: 6px; }
+.rutas-asis [aria-pressed="true"] { background: var(--accent); color: var(--surface); border-color: var(--accent); }
+.paso-a-paso li { padding-block: 2px; }
+.rutas-asis { border: 1px solid var(--accent); background: var(--accent-soft); border-radius: var(--radius); padding: 12px 14px; display: grid; gap: 10px; }
+.rutas-asis select { max-width: 320px; }
+.ida-vuelta { display: grid; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+.iv-paso { display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 12px; padding: 14px 16px; background: var(--surface); }
+.iv-n { width: 32px; height: 32px; border-radius: 50%; background: var(--accent); color: var(--surface); display: grid; place-items: center; font: 700 0.95rem var(--font-mono); }
+.iv-cuerpo { display: grid; gap: 10px; min-width: 0; }
+.iv-cuerpo > b { font-size: 1.02rem; }
+.iv-flecha { text-align: center; font: 600 0.8rem var(--font-mono); color: var(--accent); background: var(--accent-soft); padding: 6px; border-block: 1px solid var(--line); }
+.iv-flecha::before { content: "↓  "; } .iv-flecha::after { content: "  ↓"; }
+.iv-ver summary { cursor: pointer; color: var(--muted); font-size: 0.88rem; }
+.iv-pre { white-space: pre-wrap; background: var(--code-bg); color: var(--code-fg); padding: 12px; border-radius: 6px; font: 0.78rem/1.5 var(--font-mono); max-height: 300px; overflow: auto; margin: 8px 0 0; }
+.iv-chequeo { font-size: 0.9rem; font-weight: 600; }
+.iv-chequeo:empty { display: none; }
+.iv-chequeo.ok { color: var(--ok); } .iv-chequeo.mal { color: var(--bad); } .iv-chequeo.aviso { color: var(--dirty); }
+.iv-campos { display: grid; gap: 12px; margin-top: 10px; }
+.check-asis { display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: 8px; align-items: start; padding: 10px 12px; border: 1px dashed var(--line); border-radius: 6px; font-weight: 400; cursor: pointer; }
+.check-asis input { margin-top: 4px; }
+.vista-previa { background: var(--surface-2); border-radius: 6px; padding: 12px 14px; display: grid; gap: 6px; font-size: 0.94rem; }
+.pedido-asis { border: 1px dashed var(--accent); border-radius: var(--radius); padding: 0 14px; background: var(--surface); }
+.pedido-asis summary { cursor: pointer; font-weight: 700; color: var(--accent); padding: 10px 0; }
+.pedido-asis[open] { padding-bottom: 14px; }
+.pedido-asis > :not(summary) { margin-top: 10px; }
+.asis-memoria { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; }
+.asis-memoria div { background: var(--surface-2); border-radius: 6px; padding: 8px 10px; font-size: 0.84rem; }
+.asis-memoria b { display: block; font-family: var(--font-mono); font-size: 1rem; font-variant-numeric: tabular-nums; color: var(--accent); }
+.asis-nav { border-top: 1px solid var(--line); padding-top: 12px; align-items: center; }
+@media (max-width: 900px) {
+  .asis-cuerpo { grid-template-columns: minmax(0, 1fr); }
+  .asis-lado { position: static; order: -1; }
+}
+.como-usar { counter-reset: cu; display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.como-usar li { display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 10px; align-items: start; font-size: 0.95rem; }
+.como-usar li::before { counter-increment: cu; content: counter(cu); width: 24px; height: 24px; border-radius: 50%; background: var(--surface-2); color: var(--accent); font: 700 0.78rem var(--font-mono); display: grid; place-items: center; }
+.leyenda-colores { display: flex; flex-wrap: wrap; gap: 12px; font-size: 0.88rem; }
+.leyenda-colores span { display: inline-flex; gap: 6px; align-items: center; }
+
+.ideas { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+.idea { border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); padding: 14px 16px; display: grid; gap: 8px; align-content: start; transition: border-color 0.2s, transform 0.2s; }
+.idea:hover { border-color: var(--accent); transform: translateY(-2px); }
+.idea > b { font-family: var(--font-mono); font-size: 0.86rem; color: var(--accent); }
+.idea p { font-size: 0.9rem; }
+.idea dl { margin: 0; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 8px; font-size: 0.84rem; }
+.idea dt { font-family: var(--font-mono); font-size: 0.72rem; font-weight: 600; padding-top: 2px; }
+.idea dd { margin: 0; }
+.idea .t-ref { color: var(--c-ref); } .idea .t-scr { color: var(--c-scr); } .idea .t-ast { color: var(--c-ast); }
+.idea .diseno { font-size: 0.84rem; color: var(--muted); border-top: 1px dashed var(--line); padding-top: 6px; }
+
+.lab { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 16px; }
+#editor { min-height: 420px; }
+.checks { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.checks li { display: grid; grid-template-columns: 66px minmax(0, 1fr); gap: 10px; align-items: start; font-size: 0.92rem; }
+.contador { font-family: var(--font-mono); font-size: 0.78rem; color: var(--muted); }
+.barra-desc { height: 6px; background: var(--surface-2); border-radius: 3px; overflow: hidden; }
+.barra-desc i { display: block; height: 100%; background: var(--ok); transition: width 0.2s, background 0.2s; }
+.veredicto { padding: 12px 16px; border-radius: 6px; background: var(--surface-2); }
+.veredicto.ok { background: var(--ok-soft); color: var(--ok); font-weight: 600; }
+.veredicto.no { background: var(--bad-soft); color: var(--bad); font-weight: 600; }
+
+.descripcion-viva { font-size: 1rem; line-height: 1.7; }
+.descripcion-viva mark { background: var(--accent-soft); color: var(--accent); border-radius: 3px; padding: 0 3px; font-weight: 600; }
+.juego { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.tarjeta { border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); padding: 14px 16px; display: grid; gap: 10px; align-content: start; transition: border-color 0.3s, background 0.3s; }
+.tarjeta .que-dice .adjunto { margin-right: 6px; vertical-align: middle; }
+.tarjeta.acierto { border-color: var(--ok); background: var(--ok-soft); }
+.tarjeta.error { border-color: var(--bad); background: var(--bad-soft); }
+.tarjeta .porque { font-size: 0.9rem; }
+.marcador { font-family: var(--font-display); font-size: 1.3rem; }
+
+.maleta { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr); gap: 12px; align-items: center; }
+.maleta > div:not(.flecha-grande) { border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); padding: 14px; display: grid; gap: 6px; align-content: start; min-height: 150px; }
+.maleta h4 { font-size: 0.95rem; }
+.maleta p { font-size: 0.88rem; color: var(--muted); }
+.zips { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.zip { text-align: left; font: inherit; color: inherit; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px; cursor: pointer; display: grid; gap: 10px; transition: border-color 0.2s; }
+.zip:hover { border-color: var(--accent); }
+.zip .arbol { font-size: 0.76rem; }
+.zip.correcta { border-color: var(--ok); background: var(--ok-soft); }
+.zip.incorrecta { border-color: var(--bad); animation: sacudir 0.35s; }
+@keyframes sacudir { 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
+.menu-win { font-family: "Segoe UI", system-ui, sans-serif; font-size: 0.86rem; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 12px 28px -16px #0008; padding: 6px; display: grid; gap: 2px; max-width: 300px; }
+.menu-win div { padding: 6px 12px; border-radius: 4px; }
+.menu-win .activo { background: var(--accent-soft); color: var(--accent); font-weight: 600; outline: 2px solid var(--marca); }
+.carpeta-win { display: inline-flex; gap: 8px; align-items: center; font-family: "Segoe UI", system-ui, sans-serif; padding: 6px 10px; border-radius: 4px; background: var(--accent-soft); }
+.carpeta-win::before { content: ""; width: 18px; height: 14px; background: #e8b84a; border-radius: 2px 2px 3px 3px; box-shadow: inset 0 3px 0 #f5d27c; }
+
+.ciclo { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; counter-reset: paso; }
+.ciclo div { padding: 16px; border: 1px solid var(--line); background: var(--surface); }
+.ciclo div + div { border-left: 0; }
+.ciclo div:first-child { border-radius: var(--radius) 0 0 var(--radius); }
+.ciclo div:last-child { border-radius: 0 var(--radius) var(--radius) 0; }
+.ciclo h4 { font-size: 1rem; margin-bottom: 6px; }
+.ciclo p { font-size: 0.9rem; color: var(--muted); }
+.ciclo div::before { counter-increment: paso; content: counter(paso, decimal-leading-zero); font-family: var(--font-mono); font-size: 0.74rem; color: var(--accent); display: block; margin-bottom: 4px; }
+.historia { display: grid; gap: 0; }
+.version { display: grid; grid-template-columns: 100px minmax(0, 1fr); gap: 16px; padding: 16px 0; border-top: 1px solid var(--line); }
+.version:first-child { border-top: 0; }
+.version .v { font-family: var(--font-mono); font-weight: 600; color: var(--accent); }
+.version .v small { display: block; font-weight: 400; color: var(--muted); }
+.version > div { display: grid; gap: 8px; min-width: 0; }
+.bitacora input[type="text"] { min-width: 140px; }
+.bitacora select { min-width: 90px; }
+.preguntas-reflexion { display: grid; gap: 10px; }
+.preguntas-reflexion details { border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+.preguntas-reflexion summary { cursor: pointer; padding: 12px 16px; font-weight: 600; }
+.preguntas-reflexion details p { padding: 0 16px 14px; color: var(--muted); }
+
+.pregunta { display: grid; gap: 10px; }
+.pregunta fieldset { border: 0; margin: 0; padding: 0; display: grid; gap: 6px; }
+.pregunta legend { font-weight: 600; margin-bottom: 8px; padding: 0; }
+.opcion { display: flex; gap: 10px; align-items: flex-start; padding: 8px 12px; border: 1px solid var(--line); border-radius: 6px; cursor: pointer; font-weight: 400; background: var(--surface); }
+.opcion input { margin-top: 5px; }
+.opcion.bien { border-color: var(--ok); background: var(--ok-soft); }
+.opcion.mal { border-color: var(--bad); background: var(--bad-soft); }
+.retro { font-size: 0.9rem; color: var(--muted); }
+.resultado-quiz { font-family: var(--font-display); font-size: 1.4rem; }
+.siguiente { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; background: var(--accent); color: var(--surface); border-radius: var(--radius); padding: 24px; }
+.siguiente p { color: var(--surface); opacity: 0.9; }
+.siguiente a { color: var(--accent); background: var(--surface); padding: 10px 18px; border-radius: 6px; font-weight: 700; text-decoration: none; }
+
+@media (max-width: 900px) {
+  .sim, .lab, .versus, .recorrido-cuerpo, .juego, .antes-despues, .ficha, .fotos, .kit { grid-template-columns: minmax(0, 1fr); }
+  .observa, .mini-skills, .zips, .maleta, .roles { grid-template-columns: minmax(0, 1fr); }
+  .flecha-grande i { transform: rotate(90deg); margin: 10px 0; animation: none; }
+  .ciclo, .flujo-diseno { grid-template-columns: minmax(0, 1fr); }
+  .ciclo div + div, .flujo-diseno div + div { border-left: 1px solid var(--line); border-top: 0; }
+  .ciclo div:first-child, .flujo-diseno div:first-child { border-radius: var(--radius) var(--radius) 0 0; }
+  .ciclo div:last-child, .flujo-diseno div:last-child { border-radius: 0 0 var(--radius) var(--radius); }
+  .version { grid-template-columns: minmax(0, 1fr); gap: 6px; }
+  .foto { grid-template-columns: 100px minmax(0, 1fr); }
+  .clasificar .fila { grid-template-columns: minmax(0, 1fr); }
+}
+</style>
+
+<header class="masthead gutter">
+  <div class="wrap">
+    <div>
+      <p class="eyebrow">Nuevas Tecnologías · Proyecto integrador 2026-2</p>
+      <h1>Taller de Skills</h1>
+      <p class="lede">Aprende a enseñarle a Claude una tarea para que la haga siempre igual y bien. Recibes un kit con una skill lista: la exploras, la instalas en tu cuenta, la pruebas con dos fotos y comparas lo que pasó con lo que esperabas. La skill convierte la foto de la cuenta de un restaurante en una página web y, además, descubre si te cobraron de más.</p>
+      <div class="meta-row">
+        <span class="chip">9 secciones</span><span class="chip">60 a 90 minutos</span><span class="chip">Cuenta gratuita de claude.ai</span><span class="chip">Kit listo para descargar</span>
+      </div>
+    </div>
+    <div class="chat cabecera-chat" aria-label="Conversación real con la skill factura-a-web">
+      <div class="msg yo"><span class="adjunto">recibo_restaurante.jpg</span>Le tomé foto a la cuenta del restaurante. ¿Me cobraron bien? Hazme una página web con el resultado</div>
+      <div class="msg sistema">Cargó habilidad <b>factura-a-web</b></div>
+      <div class="msg sistema">Ejecutó <b>scripts/revisar_totales.py</b> y <b>scripts/generar_web.py</b></div>
+      <div class="msg ia">No, te cobraron <strong>$4.680 de más</strong>. Las 3 limonadas suman $28.500, no $31.500, y la propina se calculó sobre el impuesto. Aquí tienes la página con los errores marcados.</div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap gutter">
+  <div class="layout">
+    <nav class="toc" aria-label="Secciones">
+      <div class="progreso" aria-hidden="true"><i></i></div>
+      <a href="#que-es"><span>01</span><span>Qué es una skill</span></a>
+      <a href="#cuenta"><span>02</span><span>Preparar la cuenta</span></a>
+      <a href="#anatomia"><span>03</span><span>Las 4 piezas</span></a>
+      <a href="#practica"><span>04</span><span>Práctica: explora el kit</span></a>
+      <a href="#zip"><span>05</span><span>Instalar la skill</span></a>
+      <a href="#probar"><span>06</span><span>Probar la skill</span></a>
+      <a href="#activacion"><span>07</span><span>¿Cuándo se activa?</span></a>
+      <a href="#construir"><span>08</span><span>Construye tu skill</span></a>
+      <a href="#quiz"><span>09</span><span>Autoevaluación</span></a>
+    </nav>
+
+    <main>
+      <!-- 01 -->
+      <section id="que-es">
+        <span class="sec-num">01 · Concepto</span>
+        <h2>Una skill es una receta que Claude guarda y usa cuando la necesita</h2>
+        <p>Imagina que cada vez que sales a comer le pides a un amigo que revise la cuenta. La primera vez le explicas todo: qué sumar, cómo se calcula la propina, qué hacer si algo no cuadra. Si cada vez tuvieras que repetir la explicación, te cansarías y él lo haría distinto cada vez. Lo lógico es escribirle una receta. Una <strong>skill</strong> es eso para Claude: una carpeta con instrucciones (<code>SKILL.md</code>) y, si hace falta, documentos, programas y plantillas de apoyo.</p>
+        <div class="versus">
+          <div class="panel">
+            <h3>Sin skill <span class="etq">cada vez desde cero</span></h3>
+            <ul class="lista">
+              <li>Escribes un mensaje largo explicando qué quieres.</li>
+              <li>Claude suma de cabeza y puede equivocarse en una cifra.</li>
+              <li>Cada vez el resultado sale con otro formato.</li>
+              <li>Si otra persona lo pide, debe saber explicarlo igual de bien.</li>
+            </ul>
+          </div>
+          <div class="panel bueno">
+            <h3>Con skill <span class="etq">la receta ya está guardada</span></h3>
+            <ul class="lista">
+              <li>Escribes "¿me cobraron bien?" y adjuntas la foto.</li>
+              <li>Un programa en Python hace las cuentas: no se equivoca.</li>
+              <li>La página sale siempre con el mismo diseño.</li>
+              <li>Cualquiera que tenga la skill obtiene el mismo resultado.</li>
+            </ul>
+          </div>
+        </div>
+
+        <h3>Simulador: qué pasa por dentro cuando envías un mensaje</h3>
+        <p>Claude tiene una memoria de trabajo limitada en cada conversación (se llama <strong>contexto</strong>). Por eso no lee todas tus skills completas: las abre por partes, solo cuando las necesita. A esto se le llama <strong>carga progresiva</strong>.</p>
+        <div class="nota"><strong>Cómo usarlo:</strong> pulsa <strong>Enviar mensaje de ejemplo</strong> y luego <strong>Siguiente paso</strong> hasta el final. En cada paso fíjate en las tres cosas de abajo.</div>
+        <div class="observa">
+          <div><b>1 · Las tarjetas</b>Qué skills están abiertas y cuál elige Claude.</div>
+          <div><b>2 · El chat</b>Lo que verías en claude.ai mientras tanto.</div>
+          <div><b>3 · La barra de memoria</b>Cuánto contexto se gasta en cada paso.</div>
+        </div>
+        <div class="panel sim">
+          <div class="niveles">
+            <div class="nivel on" id="nivel1">
+              <div class="nivel-titulo"><span>Nivel 1 · Nombre y descripción</span><span>siempre cargado</span></div>
+              <div class="mini-skills">
+                <div class="mini" data-skill="factura"><b>factura-a-web</b>Revisa facturas y recibos y los convierte en página web</div>
+                <div class="mini" data-skill="limpiar"><b>limpiar-datos</b>Limpia datos sucios con pandas (HU L01)</div>
+                <div class="mini" data-skill="graficar"><b>graficar-datos</b>Tres gráficas con matplotlib (HU G01)</div>
+                <div class="mini" data-skill="apuntes"><b>resumir-apuntes</b>Resume un PDF de clase y crea preguntas</div>
+              </div>
+            </div>
+            <div class="nivel" id="nivel2">
+              <div class="nivel-titulo"><span>Nivel 2 · Cuerpo de SKILL.md</span><span>solo al activarse</span></div>
+              <p class="muted" style="font-size:.92rem">Paso 1 leer la factura · Paso 2 pasar los datos a JSON · Paso 3 verificar totales · Paso 4 generar la página · Paso 5 responder.</p>
+            </div>
+            <div class="nivel" id="nivel3">
+              <div class="nivel-titulo"><span>Nivel 3 · references/, scripts/, assets/</span><span>solo si un paso lo pide</span></div>
+              <p class="muted" style="font-size:.92rem"><code>references/campos.md</code> · <code>references/reglas.md</code> · <code>scripts/revisar_totales.py</code> · <code>scripts/generar_web.py</code> · <code>assets/plantilla.html</code></p>
+            </div>
+          </div>
+          <div class="lado">
+            <div class="chat simchat" id="simchat" aria-live="polite"></div>
+            <div class="medidor">
+              <div class="medidor-txt"><span>Memoria usada (contexto)</span><span id="medidor-txt">~100 palabras</span></div>
+              <div class="medidor-barra"><i id="medidor"></i></div>
+            </div>
+          </div>
+          <div style="grid-column:1/-1;display:grid;gap:10px">
+            <span class="paso-actual" id="paso-actual">Paso 0 de 4</span>
+            <p class="narracion" id="narracion"></p>
+            <div class="btn-row"><button class="btn primario" id="paso-sig" type="button">Enviar mensaje de ejemplo</button><button class="btn" id="paso-reset" type="button">Reiniciar</button></div>
+          </div>
+        </div>
+        <figure id="sim-real" hidden style="max-width:680px">
+          <div class="captura"><img src="img/pasos.jpg" alt="Captura de claude.ai: Cargó habilidad factura-a-web y los pasos que siguió" loading="lazy" width="635" height="490">
+            <div class="marca" style="left:2.5%;top:44.5%;width:39.5%;height:7.5%"><span>1</span></div>
+          </div>
+          <figcaption>Así se ve en claude.ai de verdad (prueba del 24 de octubre de 2026). Al desplegar los pasos aparece <strong>Cargó habilidad factura-a-web</strong>: esa línea es la prueba de que la skill se usó.</figcaption>
+        </figure>
+      </section>
+
+      <!-- 02 -->
+      <section id="cuenta">
+        <span class="sec-num">02 · Preparación</span>
+        <h2>Preparar la cuenta gratuita</h2>
+        <p>Las skills funcionan en el plan gratuito de claude.ai. Solo necesitas una cosa encendida: la <strong>ejecución de código</strong>, porque las skills con programas los corren en un computador de Claude en la nube. En las cuentas nuevas ya viene encendida; aquí solo compruebas que esté así. Sigue el recorrido: las capturas son reales y el recuadro naranja marca dónde hacer clic.</p>
+        <div class="panel recorrido" data-recorrido="cuenta">
+          <div class="recorrido-pasos" role="group" aria-label="Pasos para preparar la cuenta"></div>
+          <div class="recorrido-cuerpo">
+            <figure><div class="captura"><img alt="" loading="lazy" width="1046" height="653"></div></figure>
+            <div class="recorrido-texto"></div>
+          </div>
+          <div class="btn-row"><button class="btn" type="button" data-ant>Anterior</button><button class="btn primario" type="button" data-sig>Siguiente</button></div>
+        </div>
+        <p class="nota alerta">Tu pantalla puede verse un poco distinta. Estas capturas son de octubre de 2026, con claude.ai en español. Si un menú cambió de nombre, busca la palabra <strong>Skills</strong> o <strong>Capacidades</strong> en la configuración. Si en Capacidades aparece "Las Skills se movieron a Personalizar", haz clic en ese enlace. La guía oficial está en <a href="https://support.claude.com/en/articles/12512180" target="_blank" rel="noopener">support.claude.com</a>.</p>
+      </section>
+
+      <!-- 03 -->
+      <section id="anatomia">
+        <span class="sec-num">03 · Estructura</span>
+        <h2>Las cuatro piezas de una skill</h2>
+        <p>Una skill es una carpeta. Solo <code>SKILL.md</code> es obligatorio; las otras tres carpetas son opcionales y cada una tiene un trabajo distinto. La forma más fácil de recordarlo es pensar en una cocina y preguntarse qué hace Claude con cada archivo: ¿lo <strong>lee</strong>, lo <strong>ejecuta</strong> o lo <strong>usa</strong> sin leerlo?</p>
+        <div class="roles">
+          <div class="rol r-skill"><h3>SKILL.md</h3><span class="verbo">Claude lo lee</span><p><strong>La receta.</strong> Los pasos en orden: qué hacer, cuándo abrir cada archivo y cómo responder.</p><small>Obligatorio. Siempre en la raíz de la carpeta.</small></div>
+          <div class="rol r-ref"><h3>references/</h3><span class="verbo">Claude lo lee si lo necesita</span><p><strong>El libro de consulta.</strong> Texto de apoyo: reglas del tema, formatos, ejemplos. Se separa para no alargar la receta.</p><small>Ejemplo: <code>reglas.md</code> dice que la propina va sobre el subtotal.</small></div>
+          <div class="rol r-scr"><h3>scripts/</h3><span class="verbo">Claude lo ejecuta</span><p><strong>Los electrodomésticos.</strong> Programas que hacen siempre lo mismo, exacto: sumar, convertir, validar.</p><small>Ejemplo: <code>revisar_totales.py</code> recalcula la cuenta.</small></div>
+          <div class="rol r-ast"><h3>assets/</h3><span class="verbo">Se usa, no se lee</span><p><strong>Los moldes y platos.</strong> Archivos que forman parte del resultado: plantillas, logos, fuentes.</p><small>Ejemplo: <code>plantilla.html</code> es el diseño de la página.</small></div>
+        </div>
+        <div class="nota"><strong>La pregunta que lo resuelve todo:</strong> si es texto que Claude debe <em>entender</em>, va en <code>references/</code>. Si es código que debe <em>correr</em>, va en <code>scripts/</code>. Si es un archivo que se <em>copia o rellena</em> para el resultado, va en <code>assets/</code>.</div>
+
+        <h3>Ejercicio: ¿dónde va cada archivo?</h3>
+        <p>Para cada archivo, elige la carpeta. Verás la explicación al responder.</p>
+        <div class="clasificar" id="clasificar"></div>
+        <p class="marcador" id="marcador-clasificar" aria-live="polite"></p>
+
+        <h3>El SKILL.md completo de la práctica</h3>
+        <p>Haz clic en cualquier parte del código, o en los botones de abajo, para ver qué hace. Fíjate en qué paso se abre cada archivo de las otras carpetas.</p>
+        <div class="anatomia">
+          <div class="code">
+            <div class="code-head"><span>factura-a-web/SKILL.md</span><button class="btn copiar" type="button" data-copiar="anatomia-txt">Copiar</button></div>
+<pre id="anatomia-txt"><span class="parte" data-p="delim">---</span>
+<span class="parte" data-p="name"><span class="k">name:</span> factura-a-web</span>
+<span class="parte" data-p="desc"><span class="k">description:</span> <span class="s">Convierte la foto o el PDF de una factura, cuenta de restaurante o tirilla de supermercado en una página web HTML lista para abrir en el navegador, con los productos, los impuestos, la propina y los totales verificados. Úsala cuando alguien suba una factura o un recibo y pida pasarlo a web, página o HTML, hacer un resumen visual, o revisar si los totales, el IVA, el impoconsumo o la propina están bien cobrados.</span></span>
+<span class="parte" data-p="delim">---</span>
+
+<span class="parte" data-p="titulo"># Factura a página web
+
+Convierte una factura en una página web clara y revisa que las cuentas cuadren. Trabaja siempre en este orden y no te saltes la verificación.</span>
+
+<span class="parte" data-p="paso1">## Paso 1. Leer la factura
+
+Lee la imagen o el PDF que subió el usuario. Si es una foto, lee con cuidado los números pequeños y no confundas 3 con 8 ni 1 con 7. Ubica:
+
+- Número, fecha y tipo de negocio (restaurante, supermercado u otro).
+- Emisor (quien cobra) con su NIT, y cliente si aparece.
+- Cada producto: descripción, cantidad, precio unitario y valor de la línea.
+- Subtotal, cada impuesto con su porcentaje, la propina si la hay y el total, tal como están impresos.
+
+Si un dato no se lee o no aparece, déjalo vacío. Nunca lo inventes. Si dudas de un número, dilo en la respuesta.</span>
+
+<span class="parte" data-p="paso2">## Paso 2. Pasar los datos a JSON
+
+Escribe `factura.json` con la estructura de `<span class="c-ref-t">references/campos.md</span>`. Copia los valores impresos sin corregirlos, aunque veas un error.</span>
+
+<span class="parte" data-p="paso3">## Paso 3. Verificar los totales
+
+```bash
+python <span class="c-scr-t">scripts/revisar_totales.py</span> factura.json
+```
+
+El script recalcula cada línea, el subtotal, cada impuesto, la propina y el total, y los compara con lo impreso. Aplica las reglas de `<span class="c-ref-t">references/reglas.md</span>`, por ejemplo que la propina se calcula sobre el subtotal antes de impuestos.</span>
+
+<span class="parte" data-p="paso4">## Paso 4. Generar la página
+
+```bash
+python <span class="c-scr-t">scripts/generar_web.py</span> factura.json <span class="c-ast-t">assets/plantilla.html</span> factura.html
+```
+
+El script inserta los datos y la verificación en la plantilla. No cambies el diseño de la plantilla salvo que el usuario lo pida.</span>
+
+<span class="parte" data-p="paso5">## Paso 5. Responder
+
+1. Entrega `factura.html` para descargar y muéstrala como artefacto si puedes.
+2. Copia la tabla de verificación que imprimió el script.
+3. Si hay diferencias, explica cada una en una frase con el valor impreso, el valor correcto y cuánto se cobró de más o de menos.
+4. Termina con una sugerencia práctica, por ejemplo qué decirle al restaurante o cómo guardar la página como PDF.</span></pre>
+          </div>
+          <div class="leyenda" id="leyenda"></div>
+          <div class="panel explica" id="explica" aria-live="polite">
+            <h3>Elige una parte</h3>
+            <p class="muted">Arriba, entre las líneas <code>---</code>, va el <strong>encabezado</strong> con el nombre y la descripción: Claude lo lee siempre. Abajo va el <strong>cuerpo</strong> con los pasos: Claude lo lee solo cuando decide usar la skill. En verde, morado y naranja ves dónde se usa cada carpeta.</p>
+          </div>
+        </div>
+        <div class="arbol"><span class="c-skill">factura-a-web/</span>
+├── <span class="c-skill">SKILL.md</span>                  la receta (Claude la lee)
+├── <span class="c-ref">references/</span>               libro de consulta (Claude lo lee en el paso que lo pide)
+│   ├── campos.md            cómo escribir el JSON (paso 2)
+│   └── reglas.md            propina e impuestos en Colombia (paso 3)
+├── <span class="c-scr">scripts/</span>                  electrodomésticos (Claude los ejecuta)
+│   ├── revisar_totales.py   recalcula la cuenta (paso 3)
+│   └── generar_web.py       arma la página (paso 4)
+└── <span class="c-ast">assets/</span>                   moldes (los usa el script, Claude no los lee)
+    └── plantilla.html       diseño de la página (paso 4)</div>
+        <div class="tabla-wrap">
+          <table>
+            <thead><tr><th>Campo</th><th>Regla de claude.ai</th><th>Ejemplo</th></tr></thead>
+            <tbody>
+              <tr><td><code>name</code></td><td>Minúsculas, números y guiones. Máximo 64 caracteres. Igual al nombre de la carpeta. No puede contener "claude" ni "anthropic".</td><td><code>factura-a-web</code></td></tr>
+              <tr><td><code>description</code></td><td>Máximo 1024 caracteres y sin etiquetas como <code>&lt;algo&gt;</code>. Dice qué hace la skill y cuándo usarla.</td><td>"Convierte… Úsala cuando…"</td></tr>
+              <tr><td>Cuerpo</td><td>Instrucciones en Markdown, en pasos. Ideal por debajo de 500 líneas; lo largo va a <code>references/</code>.</td><td><code>## Paso 1…</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 04 -->
+      <section id="practica">
+        <span class="sec-num">04 · Práctica guiada</span>
+        <h2>Explora el kit: una skill lista para usar</h2>
+        <p>En clase no vas a escribir la skill desde cero. Recibes un <strong>kit</strong> con la skill <code>factura-a-web</code> terminada y dos fotos de prueba. Tu trabajo es entender cada pieza, instalarla en tu cuenta y probarla. Así se trabaja también con código de otros: antes de usarlo, lo lees.</p>
+        <div class="antes-despues">
+          <figure>
+            <img src="img/recibo_restaurante.jpg" alt="Foto de la cuenta del restaurante Sabores de la Abuela" loading="lazy" width="760" height="1348" style="border-radius:8px;border:1px solid var(--line);height:auto;max-width:280px;width:100%;justify-self:center">
+            <figcaption><strong>Entra:</strong> la foto de la cuenta (ficticia). ¿Ves los errores?</figcaption>
+          </figure>
+          <div class="flecha-grande"><span>skill</span><i></i><span>factura-a-web</span></div>
+          <figure>
+            <div class="captura"><img src="img/resultado.jpg" alt="Resultado en claude.ai: tabla de verificación con las diferencias y la página web de la cuenta con el aviso en rojo" loading="lazy" width="1273" height="653"></div>
+            <figcaption><strong>Sale:</strong> la tabla con cada error y una página web con el aviso rojo. Captura real de claude.ai.</figcaption>
+          </figure>
+        </div>
+        <div class="flujo-diseno">
+          <div><span class="quien tu">tú</span><b>Exploras</b><span>Descargas el kit y recorres cada archivo (esta sección).</span></div>
+          <div><span class="quien tu">tú</span><b>Subes</b><span>Instalas el ZIP en tu cuenta de claude.ai (sección 05).</span></div>
+          <div><span class="quien claude">Claude</span><b>Trabaja</b><span>Con tus dos fotos, lee, ejecuta los scripts y entrega la página (sección 06).</span></div>
+          <div><span class="quien tu">tú</span><b>Comparas</b><span>Revisas si pasó lo que predijiste y anotas tus pruebas en la bitácora (sección 06).</span></div>
+        </div>
+
+        <h3>Paso 4.1 · Descarga el kit</h3>
+        <ol class="como-usar">
+          <li><span>Pulsa <strong>Descargar kit_factura.zip</strong>. Si aparece un recuadro para confirmar la descarga, acepta.</span></li>
+          <li><span>Ve a tu carpeta <strong>Descargas</strong>, haz clic derecho sobre <code>kit_factura.zip</code> y elige <strong>Extraer todo</strong>.</span></li>
+          <li><span>Abre la carpeta <code>kit_factura</code>. Debe verse como este árbol.</span></li>
+        </ol>
+        <div class="kit">
+          <div class="arbol">kit_factura/
+├── <b>factura-a-web.zip</b>         la skill lista para subir
+├── factura-a-web/            la misma skill, abierta
+│   ├── <span class="c-skill">SKILL.md</span>
+│   ├── <span class="c-ref">references/</span>
+│   ├── <span class="c-scr">scripts/</span>
+│   └── <span class="c-ast">assets/</span>
+├── recibo_restaurante.jpg    caso con errores
+├── recibo_supermercado.jpg   caso que cuadra
+└── DISENO_factura-a-web.md   cómo se pensó</div>
+          <div class="panel" style="display:grid;gap:12px;align-content:start">
+            <button class="btn primario" type="button" id="descargar-kit" style="justify-self:start">Descargar kit_factura.zip</button>
+            <p class="muted" id="descarga-estado" aria-live="polite" style="font-size:.9rem"></p>
+            <p class="muted" style="font-size:.9rem">¿No funciona la descarga? Pídele el kit a tu profesor: es la misma carpeta.</p>
+            <pre id="kit-diseno" hidden># Diseño de la skill factura-a-web
+
+Este documento lo escribe el estudiante ANTES de crear la skill. No va dentro del ZIP: es el plano con el que le pides a Claude que programe los scripts.
+
+## 1. Problema
+
+Cuando pago en un restaurante o en el supermercado no reviso si la cuenta está bien sumada ni si la propina está bien calculada. Quiero subir la foto de la factura y recibir una página web clara que me diga si me cobraron de más.
+
+## 2. Entrada y salida
+
+| | Qué es | Formato |
+|---|---|---|
+| Entra | Foto o PDF de una factura | JPG, PNG o PDF |
+| Sale | Página web con los datos y la verificación | `factura.html` |
+| Sale | Tabla de verificación en el chat | Markdown |
+
+## 3. Qué va en cada carpeta y por qué
+
+| Carpeta | Archivo | Quién lo usa | Por qué está ahí |
+|---|---|---|---|
+| (raíz) | `SKILL.md` | Claude lo **lee** | La receta: los 5 pasos |
+| `references/` | `campos.md` | Claude lo **lee** en el paso 2 | Explica cómo escribir el JSON; es largo y solo sirve en ese paso |
+| `references/` | `reglas.md` | Claude lo **lee** si hay propina o impuestos | Conocimiento del tema: la propina va sobre el subtotal |
+| `scripts/` | `revisar_totales.py` | Claude lo **ejecuta** | Las cuentas deben ser exactas: no las hace el modelo |
+| `scripts/` | `generar_web.py` | Claude lo **ejecuta** | La página debe salir igual siempre |
+| `assets/` | `plantilla.html` | Lo **usa** el script, Claude no lo lee | Es el molde de la página |
+
+## 4. Diseño de las funciones
+
+### scripts/revisar_totales.py
+
+Se ejecuta así: `python scripts/revisar_totales.py factura.json`
+
+```
+función comparar(concepto, impreso, calculado) -&gt; dict
+    si impreso está vacío: estado = "SIN DATO"
+    si la diferencia es de máximo 1 peso: estado = "OK"
+    si no: estado = "DIFERENCIA"
+    devolver {concepto, impreso, calculado, estado}
+
+función revisar(factura: dict) -&gt; (filas: list, notas: list)
+    subtotal = 0
+    para cada ítem: línea = cantidad × precio_unitario; sumar al subtotal; comparar con total_impreso
+    comparar subtotal con subtotal_impreso
+    para cada impuesto: valor = subtotal × porcentaje / 100; comparar
+    si hay propina: valor = subtotal × porcentaje / 100   ← sobre el subtotal, NO sobre subtotal + impuestos
+        si el porcentaje pasa de 10: agregar nota
+        si lo impreso coincide con (subtotal + impuestos) × porcentaje: agregar nota "propina sobre impuestos"
+    total = subtotal + impuestos + propina; comparar con total_impreso
+    devolver filas y notas
+
+programa principal
+    leer factura.json, llamar a revisar, guardar filas y notas dentro del mismo JSON
+    imprimir la tabla en Markdown y una frase: cuánto se cobró de más o de menos
+```
+
+### scripts/generar_web.py
+
+Se ejecuta así: `python scripts/generar_web.py factura.json assets/plantilla.html factura.html`
+
+```
+leer factura.json; si no tiene "verificacion", terminar con un mensaje de error
+leer la plantilla y reemplazar el texto __DATOS_FACTURA__ por el JSON
+guardar factura.html
+```
+
+## 5. Casos de prueba
+
+| Factura | Resultado esperado |
+|---|---|
+| `recibo_restaurante.jpg` | 5 diferencias: la limonada (3 × $9.500 = $28.500, no $31.500) y la propina calculada sobre el impuesto. Cobran $4.680 de más. |
+| `recibo_supermercado.jpg` | Todas las cuentas cuadran. Total $149.940. |
+
+## 6. Mensaje para que Claude programe
+
+&gt; Programa `scripts/revisar_totales.py` y `scripts/generar_web.py` siguiendo exactamente este diseño. No cambies los nombres de las funciones ni los comandos. Usa solo la librería estándar de Python. Al terminar, pruébalos con este JSON de ejemplo y muéstrame la salida.</pre>
+            <p class="nota alerta" style="font-size:.9rem"><strong>No descomprimas <code>factura-a-web.zip</code>.</strong> Ese archivo se sube tal cual en la sección 05. Para leer la skill usa la carpeta <code>factura-a-web</code>.</p>
+          </div>
+        </div>
+
+        <h3>Paso 4.2 · Recorre los archivos</h3>
+        <p>Abre cada archivo de la carpeta <code>factura-a-web</code> con VS Code o el Bloc de notas, o léelo en las pestañas de abajo. Cada pestaña tiene una pregunta en <strong>Busca</strong>: encuentra la respuesta antes de pasar a la siguiente.</p>
+        <div>
+          <div class="tabs" role="tablist" aria-label="Archivos de la skill">
+            <button class="tab" role="tab" aria-selected="true" aria-controls="pf-1" id="pft-1">SKILL.md</button>
+            <button class="tab" role="tab" aria-selected="false" aria-controls="pf-2" id="pft-2">references/campos.md</button>
+            <button class="tab" role="tab" aria-selected="false" aria-controls="pf-3" id="pft-3">references/reglas.md</button>
+            <button class="tab" role="tab" aria-selected="false" aria-controls="pf-4" id="pft-4">scripts/revisar_totales.py</button>
+            <button class="tab" role="tab" aria-selected="false" aria-controls="pf-5" id="pft-5">scripts/generar_web.py</button>
+            <button class="tab" role="tab" aria-selected="false" aria-controls="pf-6" id="pft-6">assets/plantilla.html</button>
+          </div>
+          <div class="tab-panel" role="tabpanel" id="pf-1" aria-labelledby="pft-1">
+            <p><span class="quien tu">Claude lo lee</span> La receta. Es el que analizaste en la sección 03. <strong>Busca:</strong> ¿en qué paso se ejecuta cada script?</p>
+            <div class="code"><div class="code-head"><span>factura-a-web/SKILL.md</span><button class="btn copiar" type="button" data-copiar="pf-skill">Copiar</button></div><pre id="pf-skill" class="alto">---
+name: factura-a-web
+description: Convierte la foto o el PDF de una factura, cuenta de restaurante o tirilla de supermercado en una página web HTML lista para abrir en el navegador, con los productos, los impuestos, la propina y los totales verificados. Úsala cuando alguien suba una factura o un recibo y pida pasarlo a web, página o HTML, hacer un resumen visual, o revisar si los totales, el IVA, el impoconsumo o la propina están bien cobrados.
+---
+
+# Factura a página web
+
+Convierte una factura en una página web clara y revisa que las cuentas cuadren. Trabaja siempre en este orden y no te saltes la verificación.
+
+## Paso 1. Leer la factura
+
+Lee la imagen o el PDF que subió el usuario. Si es una foto, lee con cuidado los números pequeños y no confundas 3 con 8 ni 1 con 7. Ubica:
+
+- Número, fecha y tipo de negocio (restaurante, supermercado u otro).
+- Emisor (quien cobra) con su NIT, y cliente si aparece.
+- Cada producto: descripción, cantidad, precio unitario y valor de la línea.
+- Subtotal, cada impuesto con su porcentaje, la propina si la hay y el total, tal como están impresos.
+
+Si un dato no se lee o no aparece, déjalo vacío. Nunca lo inventes. Si dudas de un número, dilo en la respuesta.
+
+## Paso 2. Pasar los datos a JSON
+
+Escribe `factura.json` con la estructura de `references/campos.md`. Copia los valores impresos sin corregirlos, aunque veas un error.
+
+## Paso 3. Verificar los totales
+
+```bash
+python scripts/revisar_totales.py factura.json
+```
+
+El script recalcula cada línea, el subtotal, cada impuesto, la propina y el total, y los compara con lo impreso. Aplica las reglas de `references/reglas.md`, por ejemplo que la propina se calcula sobre el subtotal antes de impuestos.
+
+## Paso 4. Generar la página
+
+```bash
+python scripts/generar_web.py factura.json assets/plantilla.html factura.html
+```
+
+El script inserta los datos y la verificación en la plantilla. No cambies el diseño de la plantilla salvo que el usuario lo pida.
+
+## Paso 5. Responder
+
+1. Entrega `factura.html` para descargar y muéstrala como artefacto si puedes.
+2. Copia la tabla de verificación que imprimió el script.
+3. Si hay diferencias, explica cada una en una frase con el valor impreso, el valor correcto y cuánto se cobró de más o de menos.
+4. Termina con una sugerencia práctica, por ejemplo qué decirle al restaurante o cómo guardar la página como PDF.</pre></div>
+          </div>
+          <div class="tab-panel" role="tabpanel" id="pf-2" aria-labelledby="pft-2" hidden>
+            <p><span class="quien tu">Claude lo lee en el paso 2</span> <strong>references/</strong>: explica cómo escribir los datos para que los scripts los entiendan. <strong>Busca:</strong> ¿por qué pide no corregir ningún valor impreso?</p>
+            <div class="code"><div class="code-head"><span>factura-a-web/references/campos.md</span><button class="btn copiar" type="button" data-copiar="pf-campos">Copiar</button></div><pre id="pf-campos" class="alto"># Estructura de factura.json
+
+Usa exactamente estos nombres de campo. Los valores en pesos van como números enteros, sin puntos ni signo `$`. Si un dato no aparece o no se lee, escribe `""` en los textos y `null` en los números.
+
+```json
+{
+  "numero": "RS-2051",
+  "fecha": "2026-10-23",
+  "tipo": "restaurante",
+  "emisor": {"nombre": "Restaurante Sabores de la Abuela", "nit": "900.000.005-5", "ciudad": "Medellín"},
+  "cliente": {"nombre": "Consumidor final", "nit": ""},
+  "items": [
+    {"descripcion": "Bandeja paisa", "cantidad": 2, "precio_unitario": 32000, "total_impreso": 64000}
+  ],
+  "subtotal_impreso": 64000,
+  "impuestos": [
+    {"nombre": "Impoconsumo", "porcentaje": 8, "valor_impreso": 5120}
+  ],
+  "propina": {"porcentaje": 10, "valor_impreso": 6400},
+  "total_impreso": 75520
+}
+```
+
+## Reglas para llenarlo
+
+- `fecha` en formato `aaaa-mm-dd`: "23/10/2026" se escribe "2026-10-23".
+- `tipo` es `"restaurante"`, `"supermercado"` u `"otro"`.
+- `total_impreso` de cada ítem es el valor de la línea tal como aparece en la factura.
+- Un objeto en `impuestos` por cada impuesto impreso (IVA, impoconsumo). Si no hay impuestos, usa `[]`.
+- Si no hay propina, usa `"propina": null`.
+- No corrijas ningún valor impreso aunque esté mal: el script es el que detecta los errores.</pre></div>
+          </div>
+          <div class="tab-panel" role="tabpanel" id="pf-3" aria-labelledby="pft-3" hidden>
+            <p><span class="quien tu">Claude lo lee en el paso 3</span> <strong>references/</strong>: conocimiento del tema. <strong>Busca:</strong> ¿sobre qué valor se calcula la propina y cuánto es lo máximo?</p>
+            <div class="code"><div class="code-head"><span>factura-a-web/references/reglas.md</span><button class="btn copiar" type="button" data-copiar="pf-reglas">Copiar</button></div><pre id="pf-reglas" class="alto"># Reglas para revisar facturas en Colombia
+
+Resumen práctico para esta skill. No reemplaza la consulta a un contador.
+
+## Propina en restaurantes
+
+- Es voluntaria: el cliente puede no pagarla o pedir que la quiten.
+- La sugerida no puede pasar del 10 %.
+- Se calcula sobre el valor de la cuenta **antes de impuestos**, es decir, sobre el subtotal. Calcularla sobre el subtotal más el impoconsumo es un error frecuente que cobra de más.
+
+## Impuestos más comunes
+
+| Negocio | Impuesto | Porcentaje habitual |
+|---|---|---|
+| Restaurantes y bares | Impuesto nacional al consumo (impoconsumo) | 8 % |
+| Supermercados y comercio | IVA | 19 % (algunos alimentos 5 % o exentos) |
+
+El impuesto se calcula sobre el subtotal. Si la factura dice que el precio "incluye IVA", el subtotal impreso ya trae el impuesto y no se suma otra vez.
+
+## Cómo leer una tirilla
+
+- La cantidad suele ir a la izquierda y el valor de la línea a la derecha; el precio unitario aparece debajo con una "x".
+- "Vr." significa valor; "Cant." significa cantidad.
+- Los puntos separan miles: "$31.500" son treinta y un mil quinientos pesos.</pre></div>
+          </div>
+          <div class="tab-panel" role="tabpanel" id="pf-4" aria-labelledby="pft-4" hidden>
+            <p><span class="quien claude">Claude lo ejecuta</span> <strong>scripts/</strong>: el corazón de la skill. <strong>Busca:</strong> en la función <code>revisar</code>, ¿qué parte descubre que la propina se calculó sobre el impuesto?</p>
+            <div class="code"><div class="code-head"><span>factura-a-web/scripts/revisar_totales.py</span><button class="btn copiar" type="button" data-copiar="pf-revisar">Copiar</button></div><pre id="pf-revisar" class="alto">"""Recalcula las cuentas de factura.json y las compara con los valores impresos.
+
+Uso: python revisar_totales.py factura.json
+Imprime una tabla en Markdown y guarda el resultado en el mismo JSON (campo "verificacion").
+"""
+import json
+import sys
+
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+
+TOLERANCIA = 1  # pesos de diferencia aceptados por redondeo
+PROPINA_MAXIMA = 10  # por ciento, según references/reglas.md
+
+
+def pesos(valor):
+    return "—" if valor is None else "$ " + f"{round(valor):,}".replace(",", ".")
+
+
+def comparar(concepto, impreso, calculado):
+    if impreso is None:
+        estado = "SIN DATO"
+    else:
+        estado = "OK" if abs(impreso - calculado) &lt;= TOLERANCIA else "DIFERENCIA"
+    return {"concepto": concepto, "impreso": impreso, "calculado": calculado, "estado": estado}
+
+
+def revisar(factura):
+    filas, notas = [], []
+    subtotal = 0
+    for item in factura["items"]:
+        linea = item["cantidad"] * item["precio_unitario"]
+        subtotal += linea
+        filas.append(comparar(f"Línea: {item['descripcion']}", item.get("total_impreso"), linea))
+    filas.append(comparar("Subtotal", factura.get("subtotal_impreso"), subtotal))
+
+    total = subtotal
+    impuestos_impresos = 0
+    for impuesto in factura.get("impuestos") or []:
+        valor = round(subtotal * impuesto["porcentaje"] / 100)
+        total += valor
+        impuestos_impresos += impuesto.get("valor_impreso") or 0
+        filas.append(comparar(f"{impuesto['nombre']} {impuesto['porcentaje']} %", impuesto.get("valor_impreso"), valor))
+
+    propina = factura.get("propina")
+    if propina:
+        valor = round(subtotal * propina["porcentaje"] / 100)
+        total += valor
+        filas.append(comparar(f"Propina {propina['porcentaje']} % (sobre el subtotal)", propina.get("valor_impreso"), valor))
+        if propina["porcentaje"] &gt; PROPINA_MAXIMA:
+            notas.append(f"La propina sugerida es {propina['porcentaje']} %: no puede pasar del {PROPINA_MAXIMA} %.")
+        impresa = propina.get("valor_impreso")
+        sobre_impuestos = round(((factura.get("subtotal_impreso") or subtotal) + impuestos_impresos) * propina["porcentaje"] / 100)
+        if impresa is not None and abs(impresa - valor) &gt; TOLERANCIA and abs(impresa - sobre_impuestos) &lt;= TOLERANCIA:
+            notas.append("La propina impresa se calculó sobre el subtotal MÁS los impuestos; debe calcularse sobre el subtotal antes de impuestos.")
+        notas.append("La propina es voluntaria: el cliente puede pedir que se la quiten.")
+
+    filas.append(comparar("Total a pagar", factura.get("total_impreso"), total))
+    return filas, notas
+
+
+def main():
+    ruta = sys.argv[1] if len(sys.argv) &gt; 1 else "factura.json"
+    with open(ruta, encoding="utf-8") as f:
+        factura = json.load(f)
+    filas, notas = revisar(factura)
+    factura["verificacion"] = filas
+    factura["notas"] = notas
+    with open(ruta, "w", encoding="utf-8") as f:
+        json.dump(factura, f, ensure_ascii=False, indent=2)
+
+    print("| Concepto | Impreso | Calculado | Estado |")
+    print("|---|---|---|---|")
+    for r in filas:
+        print(f"| {r['concepto']} | {pesos(r['impreso'])} | {pesos(r['calculado'])} | {r['estado']} |")
+    errores = [r for r in filas if r["estado"] == "DIFERENCIA"]
+    total = filas[-1]
+    if errores:
+        diferencia = (total["impreso"] or 0) - total["calculado"]
+        sentido = "de más" if diferencia &gt; 0 else "de menos"
+        print(f"\nSe encontraron {len(errores)} diferencia(s). El total cobra {pesos(abs(diferencia))} {sentido}.")
+    else:
+        print("\nTodas las cuentas cuadran.")
+    for nota in notas:
+        print(f"- {nota}")
+
+
+if __name__ == "__main__":
+    main()</pre></div>
+          </div>
+          <div class="tab-panel" role="tabpanel" id="pf-5" aria-labelledby="pft-5" hidden>
+            <p><span class="quien claude">Claude lo ejecuta</span> <strong>scripts/</strong>: mete los datos dentro de la plantilla y crea <code>factura.html</code>. <strong>Busca:</strong> ¿qué pasa si lo ejecutas antes que <code>revisar_totales.py</code>?</p>
+            <div class="code"><div class="code-head"><span>factura-a-web/scripts/generar_web.py</span><button class="btn copiar" type="button" data-copiar="pf-generar">Copiar</button></div><pre id="pf-generar" class="alto">"""Inserta los datos de factura.json en la plantilla HTML.
+
+Uso: python generar_web.py factura.json assets/plantilla.html factura.html
+"""
+import json
+import sys
+
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+
+
+def main():
+    datos, plantilla, salida = sys.argv[1:4]
+    with open(datos, encoding="utf-8") as f:
+        factura = json.load(f)
+    if "verificacion" not in factura:
+        sys.exit("Primero ejecuta revisar_totales.py: factura.json no tiene el campo 'verificacion'.")
+    with open(plantilla, encoding="utf-8") as f:
+        html = f.read()
+    # &lt;/ dentro del JSON cerraría la etiqueta &lt;script&gt; antes de tiempo
+    incrustado = json.dumps(factura, ensure_ascii=False).replace("&lt;/", "&lt;\\/")
+    html = html.replace("__DATOS_FACTURA__", incrustado)
+    with open(salida, "w", encoding="utf-8") as f:
+        f.write(html)
+    print(f"Página creada: {salida}")
+
+
+if __name__ == "__main__":
+    main()</pre></div>
+          </div>
+          <div class="tab-panel" role="tabpanel" id="pf-6" aria-labelledby="pft-6" hidden>
+            <p><span class="quien claude">se usa, no se lee</span> <strong>assets/</strong>: el molde de la página, con un hueco (<code>__DATOS_FACTURA__</code>) donde el script pone los datos. <strong>Busca:</strong> ¿dónde está el hueco? ¿Por qué la plantilla sola, sin datos, no muestra ninguna factura?</p>
+            <div class="code"><div class="code-head"><span>factura-a-web/assets/plantilla.html</span><button class="btn copiar" type="button" data-copiar="pf-plantilla">Copiar</button></div><pre id="pf-plantilla" class="alto">&lt;!doctype html&gt;
+&lt;html lang="es"&gt;
+&lt;head&gt;
+&lt;meta charset="utf-8"&gt;
+&lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+&lt;title&gt;Factura&lt;/title&gt;
+&lt;style&gt;
+  :root { --fondo: #f4f1ea; --papel: #fffdf8; --tinta: #1f2a2e; --suave: #6b7478; --linea: #e3ddd0; --marca: #0f766e; --marca-suave: #d7efe9; --error: #b42318; --error-suave: #fde4e1; }
+  @media (prefers-color-scheme: dark) { :root { --fondo: #151b1d; --papel: #1d2528; --tinta: #eef2f1; --suave: #9aa6a8; --linea: #2f3a3d; --marca: #4fd1bd; --marca-suave: #173b36; --error: #ff8a7a; --error-suave: #3f1d1a; } }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--fondo); color: var(--tinta); font: 16px/1.5 "Segoe UI", system-ui, sans-serif; padding: 32px max(16px, 4vw); }
+  .hoja { max-width: 920px; margin: 0 auto; background: var(--papel); border: 1px solid var(--linea); border-radius: 14px; overflow: hidden; }
+  header { display: flex; justify-content: space-between; gap: 24px; flex-wrap: wrap; padding: 32px; border-bottom: 1px solid var(--linea); }
+  .etiqueta { font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--suave); }
+  h1 { margin: 4px 0 0; font-size: 1.9rem; }
+  .total { text-align: right; }
+  .total strong { display: block; font-size: 2.2rem; font-variant-numeric: tabular-nums; color: var(--marca); }
+  .estado { margin: 0 32px; margin-top: 24px; padding: 14px 18px; border-radius: 10px; font-weight: 600; background: var(--marca-suave); color: var(--marca); animation: aparecer 0.6s ease both; }
+  .estado.mal { background: var(--error-suave); color: var(--error); }
+  .notas { margin: 12px 32px 0; padding: 0 0 0 20px; color: var(--tinta); display: grid; gap: 6px; }
+  .notas:empty { display: none; }
+  .partes { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; padding: 24px 32px 8px; }
+  .parte { border: 1px solid var(--linea); border-radius: 10px; padding: 16px; }
+  .parte b { display: block; font-size: 1.05rem; margin-top: 4px; }
+  .parte span { color: var(--suave); font-size: 0.9rem; }
+  section { padding: 16px 32px 28px; }
+  h2 { font-size: 1.05rem; margin: 12px 0; }
+  .tabla { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+  th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--linea); vertical-align: middle; }
+  th { font-size: 0.75rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--suave); font-weight: 600; }
+  td.num, th.num { text-align: right; white-space: nowrap; }
+  .barra { height: 8px; border-radius: 4px; background: var(--linea); min-width: 80px; overflow: hidden; }
+  .barra i { display: block; height: 100%; background: var(--marca); width: 0; transition: width 0.9s ease; }
+  tr.fila-mal td { background: var(--error-suave); }
+  td.num small { display: block; color: var(--error); font-weight: 600; font-size: 0.78rem; }
+  .chip { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 0.8rem; font-weight: 600; background: var(--marca-suave); color: var(--marca); }
+  .chip.mal { background: var(--error-suave); color: var(--error); }
+  footer { padding: 16px 32px 28px; color: var(--suave); font-size: 0.85rem; }
+  @keyframes aparecer { from { opacity: 0; transform: translateY(-6px); } }
+  @media print { body { background: #fff; padding: 0; } .hoja { border: 0; } }
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;main class="hoja"&gt;
+  &lt;header&gt;
+    &lt;div&gt;
+      &lt;div class="etiqueta" id="tipo"&gt;Factura&lt;/div&gt;
+      &lt;h1 id="numero"&gt;&lt;/h1&gt;
+      &lt;div id="fecha" class="etiqueta"&gt;&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class="total"&gt;
+      &lt;div class="etiqueta"&gt;Total a pagar (impreso)&lt;/div&gt;
+      &lt;strong id="total"&gt;&lt;/strong&gt;
+    &lt;/div&gt;
+  &lt;/header&gt;
+  &lt;div class="estado" id="estado"&gt;&lt;/div&gt;
+  &lt;ul class="notas" id="notas"&gt;&lt;/ul&gt;
+  &lt;div class="partes"&gt;
+    &lt;div class="parte"&gt;&lt;div class="etiqueta"&gt;Emisor&lt;/div&gt;&lt;b id="emisor"&gt;&lt;/b&gt;&lt;span id="emisor-nit"&gt;&lt;/span&gt;&lt;/div&gt;
+    &lt;div class="parte"&gt;&lt;div class="etiqueta"&gt;Cliente&lt;/div&gt;&lt;b id="cliente"&gt;&lt;/b&gt;&lt;span id="cliente-nit"&gt;&lt;/span&gt;&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;section&gt;
+    &lt;h2&gt;Productos y servicios&lt;/h2&gt;
+    &lt;div class="tabla"&gt;&lt;table&gt;
+      &lt;thead&gt;&lt;tr&gt;&lt;th&gt;Descripción&lt;/th&gt;&lt;th class="num"&gt;Cant.&lt;/th&gt;&lt;th class="num"&gt;Precio unitario&lt;/th&gt;&lt;th class="num"&gt;Cobrado&lt;/th&gt;&lt;th&gt;Peso en la factura&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;
+      &lt;tbody id="items"&gt;&lt;/tbody&gt;
+    &lt;/table&gt;&lt;/div&gt;
+  &lt;/section&gt;
+  &lt;section&gt;
+    &lt;h2&gt;Verificación de cuentas&lt;/h2&gt;
+    &lt;div class="tabla"&gt;&lt;table&gt;
+      &lt;thead&gt;&lt;tr&gt;&lt;th&gt;Concepto&lt;/th&gt;&lt;th class="num"&gt;Impreso&lt;/th&gt;&lt;th class="num"&gt;Calculado&lt;/th&gt;&lt;th&gt;Estado&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;
+      &lt;tbody id="verificacion"&gt;&lt;/tbody&gt;
+    &lt;/table&gt;&lt;/div&gt;
+  &lt;/section&gt;
+  &lt;footer&gt;Página generada por la skill factura-a-web a partir de la factura. Los valores calculados vienen de cantidad × precio unitario; impuestos y propina se calculan sobre el subtotal.&lt;/footer&gt;
+&lt;/main&gt;
+&lt;script id="datos" type="application/json"&gt;__DATOS_FACTURA__&lt;/script&gt;
+&lt;script&gt;
+  const f = JSON.parse(document.getElementById("datos").textContent);
+  const pesos = (v) =&gt; v === null || v === undefined ? "—" : "$ " + Math.round(v).toLocaleString("es-CO");
+  const texto = (id, v) =&gt; { document.getElementById(id).textContent = v || ""; };
+  document.title = "Factura " + f.numero;
+  texto("numero", f.numero);
+  texto("tipo", "Factura" + (f.tipo &amp;&amp; f.tipo !== "otro" ? " · " + f.tipo : ""));
+  const notas = document.getElementById("notas");
+  (f.notas || []).forEach((n) =&gt; { const li = document.createElement("li"); li.textContent = n; notas.appendChild(li); });
+  texto("fecha", f.fecha ? new Date(f.fecha + "T00:00").toLocaleDateString("es-CO", { day: "numeric", month: "long", year: "numeric" }) : "");
+  texto("total", pesos(f.total_impreso));
+  texto("emisor", f.emisor.nombre); texto("emisor-nit", f.emisor.nit ? "NIT " + f.emisor.nit : "");
+  texto("cliente", f.cliente.nombre); texto("cliente-nit", f.cliente.nit ? "NIT " + f.cliente.nit : "");
+
+  const errores = f.verificacion.filter((v) =&gt; v.estado === "DIFERENCIA");
+  const estado = document.getElementById("estado");
+  estado.textContent = errores.length ? "Atención: " + errores.length + " valor(es) no cuadran. Revisa la tabla de verificación antes de pagar." : "Las cuentas cuadran: cada línea, el IVA y el total están bien calculados.";
+  estado.classList.toggle("mal", errores.length &gt; 0);
+
+  const subtotal = f.items.reduce((s, it) =&gt; s + it.cantidad * it.precio_unitario, 0) || 1;
+  document.getElementById("items").innerHTML = f.items.map((it) =&gt; {
+    const linea = it.cantidad * it.precio_unitario;
+    const cobrado = it.total_impreso ?? linea;
+    const mal = Math.abs(cobrado - linea) &gt; 1;
+    return "&lt;tr" + (mal ? " class='fila-mal'" : "") + "&gt;&lt;td&gt;&lt;/td&gt;&lt;td class='num'&gt;" + it.cantidad + "&lt;/td&gt;&lt;td class='num'&gt;" + pesos(it.precio_unitario) + "&lt;/td&gt;&lt;td class='num'&gt;" + pesos(cobrado) + (mal ? "&lt;small&gt;debería ser " + pesos(linea) + "&lt;/small&gt;" : "") +
+      "&lt;/td&gt;&lt;td&gt;&lt;div class='barra'&gt;&lt;i data-w='" + (linea / subtotal * 100).toFixed(1) + "'&gt;&lt;/i&gt;&lt;/div&gt;&lt;/td&gt;&lt;/tr&gt;";
+  }).join("");
+  document.querySelectorAll("#items tr").forEach((tr, i) =&gt; { tr.cells[0].textContent = f.items[i].descripcion; });
+
+  document.getElementById("verificacion").innerHTML = f.verificacion.map((v) =&gt;
+    "&lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td class='num'&gt;" + pesos(v.impreso) + "&lt;/td&gt;&lt;td class='num'&gt;" + pesos(v.calculado) + "&lt;/td&gt;&lt;td&gt;&lt;span class='chip" + (v.estado === "DIFERENCIA" ? " mal" : "") + "'&gt;" + v.estado + "&lt;/span&gt;&lt;/td&gt;&lt;/tr&gt;").join("");
+  document.querySelectorAll("#verificacion tr").forEach((tr, i) =&gt; { tr.cells[0].textContent = f.verificacion[i].concepto; });
+
+  requestAnimationFrame(() =&gt; setTimeout(() =&gt; document.querySelectorAll(".barra i").forEach((b) =&gt; { b.style.width = b.dataset.w + "%"; }), 100));
+&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</pre></div>
+          </div>
+        </div>
+
+
+        <h3>Paso 4.3 · Antes de subir, predice</h3>
+        <p>Un buen tester escribe qué espera <strong>antes</strong> de probar. Anota en tu cuaderno qué crees que pasará en estas tres preguntas, sin mirar lo que respondieron tus compañeros. En la sección 06 comprobarás si acertaste:</p>
+        <ol class="como-usar">
+          <li><span>Mira la foto del restaurante. ¿Cuántos errores crees que encontrará la skill y de cuánto será el cobro de más?</span></li>
+          <li><span>¿Qué archivo hará las sumas: <code>SKILL.md</code>, <code>reglas.md</code> o <code>revisar_totales.py</code>? ¿Por qué no las hace Claude "de cabeza"?</span></li>
+          <li><span>Si escribes "hazme una página web para mi tienda" sin adjuntar foto, ¿se activará la skill?</span></li>
+        </ol>
+
+      </section>
+
+      <!-- 05 -->
+      <section id="zip">
+        <span class="sec-num">05 · Instalación</span>
+        <h2>Instalar la skill en tu cuenta</h2>
+        <p>En el kit ya viene <code>factura-a-web.zip</code> armado correctamente. Súbelo tal cual, sin descomprimirlo, siguiendo el recorrido. Al terminar, la skill queda instalada solo en tu cuenta: cada estudiante la sube en la suya.</p>
+        <div class="tabla-wrap">
+          <table>
+            <thead><tr><th>Lugar</th><th>Para qué</th><th>Cuándo</th></tr></thead>
+            <tbody>
+              <tr><td>Configuración → Personalización → Skills</td><td><strong>Instalar</strong> la skill, como instalar una app en el celular.</td><td>Una sola vez</td></tr>
+              <tr><td>Un chat nuevo (<strong>+ Crear</strong>)</td><td><strong>Usar</strong> la skill: escribes como siempre y Claude la activa sola cuando tu mensaje encaja con la descripción.</td><td>Cada vez que la necesites</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="nota">No hay un chat especial para "hablar con la skill" ni hace falta nombrarla. La prueba de que se usó aparece dentro de la respuesta, en los pasos grises: <strong>Cargó habilidad factura-a-web</strong>.</p>
+
+        <h3>Subir el ZIP paso a paso</h3>
+        <div class="panel recorrido" data-recorrido="subir">
+          <div class="recorrido-pasos" role="group" aria-label="Pasos para subir la skill"></div>
+          <div class="recorrido-cuerpo">
+            <figure><div class="captura"><img alt="" loading="lazy" width="1046" height="653"></div></figure>
+            <div class="recorrido-texto"></div>
+          </div>
+          <div class="btn-row"><button class="btn" type="button" data-ant>Anterior</button><button class="btn primario" type="button" data-sig>Siguiente</button></div>
+        </div>
+        <h3>¿Por qué un ZIP?</h3>
+        <p>Si la skill del kit ya funcionaba como carpeta, ¿para qué viene también en ZIP? Porque una skill no es un archivo: es una <strong>carpeta con seis archivos</strong> en tres subcarpetas. El formulario de claude.ai recibe <strong>un solo archivo</strong>. El ZIP es la maleta: mete la carpeta completa, con su orden de subcarpetas, en un solo archivo. Al subirlo, claude.ai abre la maleta, busca el <code>SKILL.md</code>, lee el nombre y la descripción y revisa que no tenga nada peligroso.</p>
+        <div class="maleta">
+          <div><h4>1 · Tu carpeta</h4><div class="arbol" style="font-size:.74rem;padding:8px 10px">factura-a-web/
+├── SKILL.md
+├── references/
+├── scripts/
+└── assets/</div></div>
+          <div class="flecha-grande"><span>comprimir</span><i></i></div>
+          <div><h4>2 · Un solo archivo</h4><p><code>factura-a-web.zip</code> guarda la carpeta y su estructura. Pesa unos 9 KB.</p></div>
+          <div class="flecha-grande"><span>subir</span><i></i></div>
+          <div><h4>3 · claude.ai lo abre</h4><p>Busca <code>SKILL.md</code>, valida <code>name</code> y <code>description</code>, hace el escaneo de seguridad y guarda la skill.</p></div>
+        </div>
+
+        <h3>Mini reto: ¿cuál ZIP está bien armado?</h3>
+        <div class="zips" id="zips">
+          <button class="zip" type="button" data-ok="no" data-msg="Falta la carpeta. Al abrir el ZIP debe aparecer primero factura-a-web/ y adentro SKILL.md. Pasa cuando seleccionas los archivos de adentro y los comprimes.">
+            <strong>Opción A</strong>
+            <div class="arbol">factura-a-web.zip
+├── SKILL.md
+├── references/
+├── scripts/
+└── assets/</div>
+          </button>
+          <button class="zip" type="button" data-ok="si" data-msg="Correcto. El ZIP contiene una carpeta con el mismo nombre del campo name, y adentro está SKILL.md con sus subcarpetas.">
+            <strong>Opción B</strong>
+            <div class="arbol">factura-a-web.zip
+└── <b>factura-a-web/</b>
+    ├── SKILL.md
+    ├── references/
+    ├── scripts/
+    └── assets/</div>
+          </button>
+          <button class="zip" type="button" data-ok="no" data-msg="Dos errores: la carpeta tiene espacios y mayúsculas (no coincide con name: factura-a-web) y el archivo debe llamarse SKILL.md, no skill.txt.">
+            <strong>Opción C</strong>
+            <div class="arbol">factura-a-web.zip
+└── Factura Web/
+    ├── skill.txt
+    └── revisar_totales.py</div>
+          </button>
+        </div>
+        <p class="veredicto" id="zip-veredicto" aria-live="polite">Haz clic en una opción.</p>
+
+        <details class="panel reto">
+          <summary><span class="reto-etq">Si cambias la skill</span><b>Cómo volver a crear el ZIP en Windows</b><span class="muted">Solo lo necesitas si modificas algún archivo de la carpeta <code>factura-a-web</code> o cuando armes tu propia skill en la sección 08.</span></summary>
+          <div class="reto-cuerpo">
+        <div class="grid-2">
+          <div class="panel" style="display:grid;gap:12px;align-content:start">
+            <h3>Opción 1 · Explorador de archivos</h3>
+            <ol class="pasos">
+              <li>Abre la carpeta que <em>contiene</em> a <code>factura-a-web</code> (no entres en ella).</li>
+              <li>Clic derecho sobre la carpeta <span class="carpeta-win">factura-a-web</span></li>
+              <li>Windows 11: <strong>Comprimir en</strong> → <strong>Archivo ZIP</strong>. Windows 10: <strong>Enviar a</strong> → <strong>Carpeta comprimida (en zip)</strong>.</li>
+            </ol>
+            <div class="menu-win" aria-hidden="true"><div>Abrir</div><div>Abrir en una pestaña nueva</div><div class="activo">Comprimir en → Archivo ZIP</div><div>Copiar como ruta de acceso</div><div>Propiedades</div></div>
+          </div>
+          <div class="panel" style="display:grid;gap:12px;align-content:start">
+            <h3>Opción 2 · Terminal (recomendada)</h3>
+            <p>Abre <strong>PowerShell o CMD</strong> en la carpeta que contiene a <code>factura-a-web</code> y escribe:</p>
+            <div class="code"><div class="code-head"><span>PowerShell o CMD</span><button class="btn copiar" type="button" data-copiar="cmd-zip">Copiar</button></div><pre id="cmd-zip">tar -a -c -f factura-a-web.zip factura-a-web</pre></div>
+            <p class="muted" style="font-size:.9rem">Este <code>tar</code> viene incluido en Windows 10 y 11 y fue el que se usó para probar esta guía. <strong>No uses Git Bash</strong>: allí <code>tar</code> es otro programa y crea un archivo .tar aunque lo llames .zip. En macOS o Linux usa <code>zip -r factura-a-web.zip factura-a-web</code>.</p>
+          </div>
+        </div>
+        <figure style="max-width:780px">
+          <div class="captura"><img src="img/zip_error.jpg" alt="Error en claude.ai: Zip file contains path with invalid characters" loading="lazy" width="1046" height="653">
+            <div class="marca" style="left:23.3%;top:43%;width:73.4%;height:9.5%"><span>!</span></div>
+          </div>
+          <figcaption><strong>Error real que encontramos:</strong> el comando <code>Compress-Archive</code> de PowerShell en Windows guarda las rutas con <code>\</code> y claude.ai rechaza el ZIP con "Zip file contains path with invalid characters". Si te pasa, crea el ZIP con <code>tar</code> o con el Explorador.</figcaption>
+        </figure>
+
+          </div>
+        </details>
+      </section>
+
+      <!-- 06 -->
+      <section id="probar">
+        <span class="sec-num">06 · Pruebas</span>
+        <h2>Probar la skill</h2>
+        <p>Subir la skill no es el final. Ahora compruebas que hace lo que promete, como cuando pruebas un programa con datos reales. Primero mira cómo fue la prueba del profesor; luego haz las tuyas con las fotos del kit y anota todo.</p>
+        <div class="panel recorrido" data-recorrido="probar">
+          <div class="recorrido-pasos" role="group" aria-label="Pasos de la prueba"></div>
+          <div class="recorrido-cuerpo">
+            <figure><div class="captura"><img alt="" loading="lazy"></div></figure>
+            <div class="recorrido-texto"></div>
+          </div>
+          <div class="btn-row"><button class="btn" type="button" data-ant>Anterior</button><button class="btn primario" type="button" data-sig>Siguiente</button></div>
+        </div>
+
+        <h3>Tus tres pruebas</h3>
+        <p>Haz cada prueba en un <strong>chat nuevo</strong> (botón <strong>+ Crear</strong>) y escribe como lo haría cualquier persona, sin nombrar la skill.</p>
+        <ol class="como-usar">
+          <li><span>Adjunta <code>recibo_restaurante.jpg</code> y escribe: <em>Le tomé foto a la cuenta del restaurante. ¿Me cobraron bien? Hazme una página web con el resultado</em>.</span></li>
+          <li><span>Adjunta <code>recibo_supermercado.jpg</code> y escribe: <em>¿Esta tirilla está bien cobrada?</em></span></li>
+          <li><span>Sin adjuntar nada, escribe: <em>Hazme una página web para mi tienda</em>. Aquí se prueba si la skill se activa cuando no debe.</span></li>
+        </ol>
+        <p>Esto es lo que debería pasar con cada foto. Compáralo con lo que obtuviste.</p>
+        <div class="fotos">
+          <div class="panel foto">
+            <img src="img/recibo_restaurante.jpg" alt="Foto de la cuenta del restaurante" loading="lazy" width="760" height="1348">
+            <div style="display:grid;gap:8px"><b><code>recibo_restaurante.jpg</code></b><p class="muted" style="font-size:.9rem">Restaurante Sabores de la Abuela, 5 platos, impoconsumo 8 % y propina sugerida 10 %.</p>
+              <p class="espera mal"><strong>Debe encontrar 2 errores:</strong> las 3 limonadas suman $28.500, no $31.500; y la propina se calculó sobre el impuesto. Cobran $4.680 de más.</p></div>
+          </div>
+          <div class="panel foto">
+            <img src="img/recibo_supermercado.jpg" alt="Foto de la tirilla del supermercado" loading="lazy" width="760" height="1368">
+            <div style="display:grid;gap:8px"><b><code>recibo_supermercado.jpg</code></b><p class="muted" style="font-size:.9rem">Mercados La Canasta, 7 productos de aseo y hogar, IVA 19 %.</p>
+              <p class="espera"><strong>Debe decir que todo cuadra:</strong> total $149.940 y la página con el aviso en verde.</p></div>
+          </div>
+        </div>
+
+        <h3>Tu bitácora de pruebas</h3>
+        <p>Anota cada prueba; se guarda en este navegador. Escribe siempre el mismo mensaje entre versiones: si cambias el mensaje y la skill a la vez, no sabrás qué arregló el problema.</p>
+        <div class="tabla-wrap bitacora">
+          <table>
+            <thead><tr><th>#</th><th>Mensaje que escribí</th><th>Archivo</th><th>¿Se activó?</th><th>¿Qué cambié después?</th></tr></thead>
+            <tbody id="bitacora"></tbody>
+          </table>
+        </div>
+        <div class="btn-row"><button class="btn" type="button" id="bit-add">Agregar prueba</button><button class="btn" type="button" id="bit-reset">Borrar bitácora</button></div>
+
+        <h3>El ciclo de mejora</h3>
+        <div class="ciclo">
+          <div><h4>Probar</h4><p>Abre un chat nuevo, adjunta la foto y escribe como lo haría un compañero, sin nombrar la skill.</p></div>
+          <div><h4>Observar</h4><p>¿Aparece "Cargó habilidad"? ¿Se ejecutaron los dos scripts? ¿El resultado coincide con el que esperabas?</p></div>
+          <div><h4>Ajustar</h4><p>Si no se activó, cambia la descripción. Si hizo otra cosa, cambia los pasos o el diseño. Una sola cosa a la vez.</p></div>
+          <div><h4>Volver a subir</h4><p>Sube el ZIP nuevo con el mismo nombre: claude.ai pregunta si reemplazar y guarda la versión anterior.</p></div>
+        </div>
+
+        <h3>Historia real de esta skill: cuatro versiones</h3>
+        <p>Así mejoró la skill de este taller mientras la probábamos. Fíjate que en dos de las mejoras fue Claude quien encontró el problema.</p>
+        <div class="panel historia">
+          <div class="version"><div class="v">v1<small>funcionaba a medias</small></div><div><p>Leía facturas en PDF y revisaba sumas e IVA. No entendía de propinas ni de impoconsumo, así que una cuenta de restaurante quedaba mal revisada.</p></div></div>
+          <div class="version"><div class="v">v2<small>nuevo diseño</small></div><div><p><strong>Cambio de diseño:</strong> aceptar fotos, una lista de impuestos y la propina. Se agregó <code>references/reglas.md</code> con la regla de la propina.</p><p><strong>Resultado:</strong> encontró los dos errores del restaurante. Pero Claude advirtió algo más: en la página, la columna de productos mostraba el valor recalculado y no el cobrado, y eso confundía.</p></div></div>
+          <div class="version"><div class="v">v3<small>la actual</small></div><div><p><strong>Cambio:</strong> la plantilla muestra lo cobrado y, en rojo, cuánto debería ser. Se subió el ZIP con el mismo nombre y claude.ai guardó la v2 en el historial.</p></div></div>
+          <div class="version"><div class="v">v4<small>tu reto</small></div><div><p>Con una tirilla de mercado que tenía arroz, leche y huevos, las sumas cuadraban, pero Claude avisó, gracias a <code>reglas.md</code>, que esos alimentos no suelen pagar IVA del 19 %. El script aún no revisa tarifas por producto.</p><p><strong>Reto:</strong> diseña la v4. ¿Qué campo nuevo necesita cada ítem en <code>campos.md</code>? ¿Qué cambia en la función <code>revisar</code>?</p></div></div>
+        </div>
+
+        <h3>Si algo sale mal</h3>
+        <div class="tabla-wrap">
+          <table>
+            <thead><tr><th>Síntoma</th><th>Causa probable</th><th>Solución</th></tr></thead>
+            <tbody>
+              <tr><td>"Zip file contains path with invalid characters"</td><td>ZIP creado con <code>Compress-Archive</code> de PowerShell.</td><td>Créalo con <code>tar -a -c -f</code> en PowerShell o CMD, o con el Explorador.</td></tr>
+              <tr><td>claude.ai no reconoce el ZIP</td><td>Lo creaste con <code>tar</code> en Git Bash y es un .tar.</td><td>Usa el ZIP del kit, o créalo en PowerShell o CMD (sección 05).</td></tr>
+              <tr><td>Otro error al subir</td><td>La carpeta no coincide con <code>name</code>, falta <code>SKILL.md</code> o el ZIP no tiene la carpeta raíz.</td><td>Sube el <code>factura-a-web.zip</code> del kit sin descomprimirlo. Si lo rehiciste, repasa el mini reto de la sección 05.</td></tr>
+              <tr><td>No aparece "Cargó habilidad"</td><td>La descripción no menciona lo que pediste, o la skill está apagada.</td><td>Revisa el interruptor y agrega a la descripción las palabras de tu mensaje.</td></tr>
+              <tr><td>Se activó pero no ejecutó los scripts</td><td>La ejecución de código está apagada.</td><td>Configuración → Capacidades → Ejecución de código y creación de archivos (sección 02).</td></tr>
+              <tr><td>Leyó mal un número de la foto</td><td>Foto borrosa, con sombra o torcida.</td><td>Toma la foto de frente, con luz pareja. El paso 1 le pide a Claude avisar si duda.</td></tr>
+              <tr><td>La página sale sin tildes o con símbolos raros</td><td>Algún archivo no se guardó en UTF-8.</td><td>En VS Code, abajo a la derecha, elige UTF-8, guarda y vuelve a comprimir.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Para pensar antes de seguir</h3>
+        <div class="preguntas-reflexion">
+          <details><summary>¿Por qué la skill pide no corregir los valores impresos en el JSON?</summary><p>Porque el objetivo es descubrir errores de la factura. Si Claude "arregla" la limonada al leerla, el script nunca vería la diferencia y la página diría que todo cuadra.</p></details>
+          <details><summary>¿Por qué la regla de la propina va en references/ y no solo en el script?</summary><p>El script calcula, pero no explica. Con <code>reglas.md</code>, Claude entiende el porqué y puede contárselo al usuario, e incluso notar problemas que el script no revisa, como la tarifa de IVA de cada producto.</p></details>
+          <details><summary>¿Para qué trae el kit un DISENO_factura-a-web.md si Claude nunca lo lee?</summary><p>El diseño es para personas. Con él entiendes qué debe hacer cada función y puedes revisar si el código cumple, explicarlo en una sustentación y cambiarlo sin empezar de cero. Por eso va en el repositorio y no dentro del ZIP.</p></details>
+          <details><summary>¿Qué parte de tu proyecto integrador se parece a esta skill?</summary><p>La limpieza de datos (HU L01): entra un archivo sucio, una receta fija lo procesa y sale un archivo con formato conocido. Las skills del proyecto siguen la misma idea, con pandas en lugar de la plantilla HTML.</p></details>
+        </div>
+      </section>
+
+      <!-- 07 -->
+      <section id="activacion">
+        <span class="sec-num">07 · Activación</span>
+        <h2>¿Cuándo usa Claude tu skill?</h2>
+        <p>En la prueba 3 viste que la skill no se activó con un pedido que no tenía nada que ver. Claude decide si usa una skill leyendo <strong>solo la descripción</strong>, nunca el resto del archivo. Si tu mensaje se parece a lo que dice la descripción, la abre; si no, responde sin ella. Estas son las ideas clave de la descripción de <code>factura-a-web</code>:</p>
+        <div class="panel descripcion-viva">Convierte la <mark>foto o el PDF</mark> de una <mark>factura</mark>, <mark>cuenta de restaurante</mark> o <mark>tirilla de supermercado</mark> en una <mark>página web HTML</mark> lista para abrir en el navegador, con los productos, los impuestos, la propina y los totales verificados. Úsala cuando alguien <mark>suba una factura o un recibo</mark> y pida <mark>pasarlo a web, página o HTML</mark>, hacer un <mark>resumen visual</mark>, o <mark>revisar si los totales, el IVA, el impoconsumo o la propina</mark> están bien cobrados.</div>
+        <h3>Juego: ¿se activa o no?</h3>
+        <p>Lee cada mensaje que podría escribir un compañero y decide si Claude usaría <code>factura-a-web</code>. Fíjate en dos cosas: si hay una factura o un recibo, y si se pide algo que la descripción menciona.</p>
+        <div class="juego" id="juego"></div>
+        <p class="marcador" id="marcador" aria-live="polite"></p>
+        <div class="nota"><strong>La lección:</strong> la descripción funciona como un anuncio. Debe decir <em>qué hace</em> la skill y <em>cuándo usarla</em>, con las palabras que de verdad escribiría alguien. Si dijera solo "hace páginas web", se activaría con cualquier pedido de páginas y no con "¿me cobraron bien?".</div>
+      </section>
+
+      <!-- 08 -->
+      <section id="construir">
+        <span class="sec-num">08 · Tu turno</span>
+        <h2>Construye tus propias skills</h2>
+        <p>Ya usaste una skill hecha. Ahora armas las tuyas con un asistente que te hace preguntas, te dice cuándo usar cada carpeta y te da el mensaje exacto para que Claude escriba el código. Hay dos asistentes: <strong>A</strong> para las HU del proyecto integrador y <strong>B</strong> para cualquier otra necesidad.</p>
+
+        <h3>A · Una skill para cada HU del proyecto</h3>
+        <div class="tabla-wrap tabla-rutas">
+          <table>
+            <thead><tr><th>HU</th><th>Skill</th><th>Qué hace</th><th>Qué adjuntas al usarla</th><th>Qué te entrega</th></tr></thead>
+            <tbody>
+              <tr><td>F01 + X01</td><td><code>revisar-simulacion-TABLA</code></td><td>Revisa tu simulación y tu exportación criterio por criterio y corrige lo que falla.</td><td><code>simular_TABLA.py</code>, <code>exportar_TABLA.py</code> y, si los tienes, los <code>TABLA_sucio.*</code></td><td>Tabla PASA o FALLA por criterio y los dos scripts corregidos</td></tr>
+              <tr><td>L01</td><td><code>limpiar-TABLA</code></td><td>Ejecuta la limpieza con pandas.</td><td><code>TABLA_sucio.csv</code></td><td><code>TABLA_limpio.csv</code>, el antes y después y <code>limpiar_TABLA.py</code></td></tr>
+              <tr><td>Q01</td><td><code>consultar-TABLA</code></td><td>Ejecuta las cinco consultas, dos con groupby.</td><td><code>TABLA_limpio.csv</code></td><td>Las cinco respuestas, un CSV por consulta y <code>consultas_TABLA.py</code></td></tr>
+              <tr><td>G01</td><td><code>graficar-TABLA</code></td><td>Ejecuta las tres gráficas y escribe las conclusiones.</td><td><code>TABLA_limpio.csv</code></td><td>Tres PNG, las conclusiones y <code>reporte_TABLA.py</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="nota"><strong>El orden importa:</strong> cada HU usa lo que produjo la anterior. Primero F01 + X01, porque sin <code>TABLA_sucio.csv</code> no hay nada que limpiar. Luego L01, que produce <code>TABLA_limpio.csv</code>. Al final Q01 y G01, que leen ese archivo limpio.</p>
+
+
+        <h3 id="paso-a-paso-hu">Paso a paso</h3>
+        <div class="grid-2">
+          <div class="panel" style="display:grid;gap:8px;align-content:start">
+            <b>Antes de empezar (una sola vez)</b>
+            <ol class="como-usar">
+              <li><span>Crea la carpeta de tu proyecto con <code>src/</code>, <code>data/crudo/</code>, <code>data/limpio/</code> y <code>reportes/</code>.</span></li>
+              <li><span>Instala las librerías: <code>pip install pandas faker openpyxl matplotlib</code>.</span></li>
+              <li><span>Descarga de tu repositorio los scripts que ya tengas, por ejemplo <code>simular_TABLA.py</code>.</span></li>
+              <li><span>Abre dos pestañas: este Taller y <a href="https://claude.ai/new" target="_blank" rel="noopener">claude.ai</a>.</span></li>
+            </ol>
+          </div>
+          <div class="panel" style="display:grid;gap:8px;align-content:start">
+            <b>Al terminar las cuatro HU tendrás</b>
+            <div class="arbol" style="font-size:.76rem">proyecto/
+├── src/
+│   ├── simular_TABLA.py     F01
+│   ├── exportar_TABLA.py    X01
+│   ├── limpiar_TABLA.py     L01
+│   ├── consultas_TABLA.py   Q01
+│   └── reporte_TABLA.py     G01
+├── data/crudo/    TABLA_sucio.csv .xlsx .json
+├── data/limpio/   TABLA_limpio.csv y consultas
+└── reportes/      3 gráficas PNG</div>
+          </div>
+        </div>
+        <p><strong>Para cada HU</strong>, en orden F01 + X01 → L01 → Q01 → G01, repite estos pasos:</p>
+        <ol class="como-usar paso-a-paso">
+          <li><span><b>Asistente A · paso 1.</b> Elige tu tabla y la HU. Copia cada texto sugerido en su recuadro.</span></li>
+          <li><span><b>Paso 2.</b> Copia las tres situaciones sugeridas.</span></li>
+          <li><span><b>Paso 3.</b> Elige <strong>Sí</strong>. Abre tu tarjeta en Kaizen, copia los criterios de aceptación y pégalos en el recuadro.</span></li>
+          <li><span><b>Paso 4.</b> Elige <strong>Sí</strong> y copia los textos sugeridos. Si todavía no tienes el archivo de prueba de la tabla de abajo, marca <strong>Todavía no tengo un archivo de prueba</strong>.</span></li>
+          <li><span><b>A · Lleva el mensaje.</b> Pulsa <strong>Copiar mensaje</strong> y <strong>Abrir chat nuevo</strong>. Pega, adjunta tu archivo de prueba y envía. Si el texto se vuelve una tarjeta "PASTED", escribe <em>Sigue las instrucciones del texto pegado.</em></span></li>
+          <li><span><b>B · Trae la respuesta.</b> Copia el bloque de código del final de la respuesta y pégalo en el recuadro B.</span></li>
+          <li><span><b>Pasos 5 a 7.</b> Elige <strong>No</strong> en assets, copia la respuesta sugerida, revisa la receta y pulsa <strong>Descargar ZIP</strong>.</span></li>
+          <li><span><b>Sube la skill.</b> En claude.ai: Configuración → Personalización → Skills → Agregar → Subir Skill → tu ZIP → Subir.</span></li>
+          <li><span><b>Úsala.</b> Abre un chat nuevo, adjunta lo que indica la tabla de abajo y escribe el pedido.</span></li>
+          <li><span><b>Guarda el código.</b> Copia cada script que te entregue y guárdalo en <code>src/</code> con el nombre que pide la HU.</span></li>
+          <li><span><b>Ejecútalo</b> en tu computador con el comando de su HU.</span></li>
+          <li><span><b>Entrega.</b> Sube los cambios a GitHub y mueve la tarjeta a <strong>Hecho</strong> en Kaizen.</span></li>
+        </ol>
+        <div class="tabla-wrap tabla-rutas">
+          <table>
+            <thead><tr><th>HU</th><th>Archivo de prueba (paso 5)</th><th>Qué adjuntas al usarla (paso 9)</th><th>Qué escribes (paso 9)</th></tr></thead>
+            <tbody>
+              <tr><td>F01 + X01</td><td>Ninguno: marca la casilla</td><td><code>simular_TABLA.py</code> y, si existe, <code>exportar_TABLA.py</code></td><td><em>Revisa si mi simulación de TABLA cumple la HU y corrígela.</em> Si no tienes exportador, en el mismo chat: <em>Créame también src/exportar_TABLA.py según la HU X01.</em></td></tr>
+              <tr><td>L01</td><td><code>TABLA_sucio.csv</code></td><td><code>TABLA_sucio.csv</code></td><td><em>Limpia mis datos de TABLA</em></td></tr>
+              <tr><td>Q01</td><td><code>TABLA_limpio.csv</code></td><td><code>TABLA_limpio.csv</code></td><td><em>Haz las consultas de TABLA de mi HU</em></td></tr>
+              <tr><td>G01</td><td><code>TABLA_limpio.csv</code></td><td><code>TABLA_limpio.csv</code></td><td><em>Hazme las gráficas y el reporte de TABLA</em></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="code"><div class="code-head"><span>Comandos del paso 11, en la carpeta del proyecto</span><button class="btn copiar" type="button" data-copiar="cmd-hu">Copiar</button></div><pre id="cmd-hu">python src/simular_TABLA.py
+python src/exportar_TABLA.py
+python src/limpiar_TABLA.py data/crudo/TABLA_sucio.csv
+python src/consultas_TABLA.py data/limpio/TABLA_limpio.csv
+python src/reporte_TABLA.py data/limpio/TABLA_limpio.csv</pre></div>
+        <div class="nota"><strong>Consejos:</strong> copia siempre el bloque que empieza con <code>"""</code> o <code>import</code>, no el de la salida; guarda los scripts con el nombre que pide la HU, aunque el tuyo se llamara distinto; y en la cuenta gratuita haz una o dos HU por sesión, porque cada una usa 2 o 3 mensajes.</div>
+        <p class="nota alerta"><strong>La skill te da el código, pero la HU es tuya.</strong> Lee cada línea antes de subirla y ejecútala tú: en la sustentación te van a preguntar qué hace. Si algo no lo entiendes, pídele a Claude en el mismo chat que te lo explique.</p>
+        <div class="panel" style="display:grid;gap:10px">
+          <h4>Dos códigos distintos: no los confundas</h4>
+          <div class="tabla-wrap">
+            <table>
+              <thead><tr><th></th><th>La herramienta de la skill</th><th>Tu código del proyecto</th></tr></thead>
+              <tbody>
+                <tr><td>Ejemplo</td><td><code>scripts/revisar_datos.py</code></td><td><code>simular_retos.py</code> y <code>exportar_retos.py</code></td></tr>
+                <tr><td>Quién lo escribe</td><td>Claude, en el paso 4 del asistente</td><td>Tú, en tu repositorio</td></tr>
+                <tr><td>Dónde va</td><td>En el recuadro B del paso 4 y, de ahí, dentro del ZIP</td><td>Lo adjuntas en el chat cuando usas la skill</td></tr>
+                <tr><td>Para qué sirve</td><td>Es la calculadora del revisor: cuenta filas, nulos y duplicados</td><td>Es lo que la skill revisa y corrige</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="muted">En las rutas L01, Q01 y G01 se juntan: la herramienta que escribe Claude es también el código que la skill te devuelve para guardar en <code>src/</code>.</p>
+        </div>
+
+        <h4>Asistente A · skills para las HU</h4>
+        <div class="panel asistente" id="asistente">
+          <ol class="asis-pasos" id="asis-pasos" aria-label="Pasos del asistente"></ol>
+          <div class="asis-cuerpo">
+            <div class="asis-paso" id="asis-paso" aria-live="polite"></div>
+            <aside class="asis-lado" aria-label="Tu carpeta">
+              <h4>Tu carpeta</h4>
+              <div class="arbol asis-arbol" id="asis-arbol"></div>
+              <p class="muted" style="font-size:.84rem">Se arma sola con tus respuestas. Lo que escribes se guarda en este navegador.</p>
+            </aside>
+          </div>
+          <div class="btn-row asis-nav"><button class="btn" type="button" id="asis-ant">Anterior</button><button class="btn primario" type="button" id="asis-sig">Siguiente</button><button class="btn" type="button" id="asis-reiniciar">Empezar de nuevo</button><span class="muted" id="asis-aviso" aria-live="polite" style="font-size:.9rem"></span></div>
+        </div>
+
+        <h3>B · Una skill para cualquier otra necesidad</h3>
+        <p>Resumir apuntes, revisar tu código, pasar un horario a calendario, armar un acta. Este asistente funciona igual que el A, pero sin tabla ni HU: tú decides qué hace y respondes cada pregunta con tus palabras.</p>
+        <div class="panel asistente" id="lb-asistente">
+          <ol class="asis-pasos" id="lb-asis-pasos" aria-label="Pasos del asistente"></ol>
+          <div class="asis-cuerpo">
+            <div class="asis-paso" id="lb-asis-paso" aria-live="polite"></div>
+            <aside class="asis-lado" aria-label="Tu carpeta">
+              <h4>Tu carpeta</h4>
+              <div class="arbol asis-arbol" id="lb-asis-arbol"></div>
+              <p class="muted" style="font-size:.84rem">Se arma sola con tus respuestas. Lo que escribes se guarda en este navegador.</p>
+            </aside>
+          </div>
+          <div class="btn-row asis-nav"><button class="btn" type="button" id="lb-asis-ant">Anterior</button><button class="btn primario" type="button" id="lb-asis-sig">Siguiente</button><button class="btn" type="button" id="lb-asis-reiniciar">Empezar de nuevo</button><span class="muted" id="lb-asis-aviso" aria-live="polite" style="font-size:.9rem"></span></div>
+        </div>
+
+        <h3>Más ideas para el asistente B</h3>
+        <p>Cada idea dice qué iría en cada carpeta. No todas necesitan programas: si nada debe salir exacto, basta con <code>SKILL.md</code> y <code>references/</code>.</p>
+        <div class="leyenda-colores"><span><span class="quien" style="background:var(--surface-2);color:var(--c-ref)">references</span> Claude lo lee</span><span><span class="quien" style="background:var(--surface-2);color:var(--c-scr)">scripts</span> Claude lo ejecuta</span><span><span class="quien" style="background:var(--surface-2);color:var(--c-ast)">assets</span> se usa en el resultado</span></div>
+        <div class="ideas">
+          <div class="idea"><b>resumir-apuntes</b><p>Sube el PDF de la clase y recibe un resumen de una página con 10 preguntas de repaso.</p><dl><dt class="t-ref">references</dt><dd>formato del resumen y tipos de pregunta</dd><dt class="t-scr">scripts</dt><dd>no necesita</dd><dt class="t-ast">assets</dt><dd>no necesita</dd></dl><p class="diseno">Tú diseñas: las secciones del resumen y cómo debe ser una buena pregunta.</p></div>
+          <div class="idea"><b>hoja-de-vida-a-web</b><p>Sube tu hoja de vida en PDF y recibe un portafolio en HTML.</p><dl><dt class="t-ref">references</dt><dd>qué secciones debe tener y en qué orden</dd><dt class="t-scr">scripts</dt><dd><code>generar_portafolio.py</code>: JSON → HTML</dd><dt class="t-ast">assets</dt><dd><code>plantilla.html</code> con tu estilo</dd></dl><p class="diseno">Tú diseñas: el JSON de la hoja de vida y la función que lo convierte en página.</p></div>
+          <div class="idea"><b>horario-a-calendario</b><p>Sube la foto del horario y recibe un archivo para Google Calendar.</p><dl><dt class="t-ref">references</dt><dd>cómo leer las franjas y los códigos de los salones</dd><dt class="t-scr">scripts</dt><dd><code>crear_ics.py</code>: lista de clases → archivo .ics</dd><dt class="t-ast">assets</dt><dd>no necesita</dd></dl><p class="diseno">Tú diseñas: la estructura de una clase (día, hora, salón) y la función que escribe el .ics.</p></div>
+          <div class="idea"><b>revisar-codigo-python</b><p>Sube un script y recibe la lista de problemas según las convenciones del curso.</p><dl><dt class="t-ref">references</dt><dd>convenciones del curso (nombres, comentarios, funciones)</dd><dt class="t-scr">scripts</dt><dd><code>revisar.py</code>: busca funciones sin docstring o líneas largas</dd><dt class="t-ast">assets</dt><dd>no necesita</dd></dl><p class="diseno">Tú diseñas: qué reglas se revisan con código y cuáles las juzga Claude.</p></div>
+          <div class="idea"><b>gastos-del-mes</b><p>Sube un CSV de gastos y recibe una gráfica por categoría y tres consejos.</p><dl><dt class="t-ref">references</dt><dd>categorías de gasto y cómo clasificar cada compra</dd><dt class="t-scr">scripts</dt><dd><code>resumen.py</code> con pandas y matplotlib</dd><dt class="t-ast">assets</dt><dd>no necesita</dd></dl><p class="diseno">Tú diseñas: las columnas del CSV, la agrupación y el tipo de gráfica.</p></div>
+          <div class="idea"><b>acta-de-reunion</b><p>Pega las notas sueltas de una reunión y recibe un acta con decisiones y tareas.</p><dl><dt class="t-ref">references</dt><dd>modelo del acta</dd><dt class="t-scr">scripts</dt><dd>no necesita</dd><dt class="t-ast">assets</dt><dd><code>acta.docx</code> como plantilla, si la quieres en Word</dd></dl><p class="diseno">Tú diseñas: las partes del acta y cómo se escribe una tarea (qué, quién, cuándo).</p></div>
+          <div class="idea"><b>readme-de-proyecto</b><p>Sube los archivos de tu repositorio y recibe un README completo.</p><dl><dt class="t-ref">references</dt><dd>estructura de un buen README del curso</dd><dt class="t-scr">scripts</dt><dd><code>arbol.py</code>: dibuja el árbol de carpetas</dd><dt class="t-ast">assets</dt><dd>no necesita</dd></dl><p class="diseno">Tú diseñas: las secciones obligatorias y qué se calcula con el script.</p></div>
+          <div class="idea"><b>quiz-de-estudio</b><p>Sube un tema o un PDF y recibe un examen de práctica con retroalimentación.</p><dl><dt class="t-ref">references</dt><dd>niveles de dificultad y tipos de pregunta</dd><dt class="t-scr">scripts</dt><dd><code>calificar.py</code>: compara respuestas y da la nota</dd><dt class="t-ast">assets</dt><dd><code>quiz.html</code> para responder en el navegador</dd></dl><p class="diseno">Tú diseñas: el formato de cada pregunta y la regla de calificación.</p></div>
+        </div>
+      </section>
+
+      <!-- 09 -->
+      <section id="quiz">
+        <span class="sec-num">09 · Cierre</span>
+        <h2>Autoevaluación</h2>
+        <p>Nueve preguntas. Al responder verás la explicación de cada una.</p>
+        <form id="form-quiz" class="panel" style="display:grid;gap:26px"></form>
+        <p class="resultado-quiz" id="res-quiz" aria-live="polite"></p>
+        <div class="siguiente">
+          <div style="display:grid;gap:6px"><h3>Siguiente: las skills de tus HU</h3><p>Usa lo que aprendiste para probar, limpiar, consultar y graficar los datos del proyecto integrador.</p></div>
+          <a href="guia_hu_skills.html">Abrir la guía por HU</a>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<script>
+// Utilidades compartidas: copiar codigo, indice activo, pestanas, almacenamiento seguro
+const almacen = {
+  leer(clave, defecto) { try { const v = localStorage.getItem(clave); return v === null ? defecto : JSON.parse(v); } catch (e) { return defecto; } },
+  guardar(clave, valor) { try { localStorage.setItem(clave, JSON.stringify(valor)); } catch (e) { /* sin almacenamiento */ } }
+};
+
+function copiarTexto(texto, boton, nodoTexto) {
+  const original = boton.dataset.texto || (boton.dataset.texto = boton.textContent);
+  const listo = () => { boton.textContent = "Copiado"; boton.classList.add("hecho"); setTimeout(() => { boton.textContent = original; boton.classList.remove("hecho"); }, 1600); };
+  const respaldo = () => {
+    if (!nodoTexto) return;
+    const rango = document.createRange(); rango.selectNodeContents(nodoTexto);
+    const sel = getSelection(); sel.removeAllRanges(); sel.addRange(rango);
+    boton.textContent = "Seleccionado: Ctrl+C";
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(texto).then(listo, respaldo);
+  else respaldo();
+}
+
+document.addEventListener("click", (e) => {
+  const boton = e.target.closest("[data-copiar]");
+  if (!boton) return;
+  const destino = document.getElementById(boton.dataset.copiar);
+  const texto = destino.value !== undefined && destino.tagName === "TEXTAREA" ? destino.value : destino.textContent;
+  copiarTexto(texto, boton, destino);
+});
+
+document.querySelectorAll("[role=tablist]").forEach((lista) => {
+  const tabs = [...lista.querySelectorAll("[role=tab]")];
+  tabs.forEach((tab) => tab.addEventListener("click", () => {
+    tabs.forEach((t) => { t.setAttribute("aria-selected", t === tab); document.getElementById(t.getAttribute("aria-controls")).hidden = t !== tab; });
+  }));
+});
+
+(function indice() {
+  const enlaces = [...document.querySelectorAll(".toc a")];
+  const secciones = enlaces.map((a) => document.querySelector(a.getAttribute("href"))).filter(Boolean);
+  const barra = document.querySelector(".progreso i");
+  const actualizar = () => {
+    let actual = 0;
+    secciones.forEach((s, i) => { if (s.getBoundingClientRect().top < innerHeight * 0.35) actual = i; });
+    enlaces.forEach((a, i) => a.classList.toggle("activo", i === actual));
+    if (barra) {
+      const total = document.documentElement.scrollHeight - innerHeight;
+      barra.style.width = (total > 0 ? Math.min(100, (scrollY / total) * 100) : 0) + "%";
+    }
+  };
+  addEventListener("scroll", actualizar, { passive: true });
+  actualizar();
+})();
+
+
+// 01 Simulador de carga progresiva
+(function () {
+  const chat = document.getElementById("simchat");
+  const MENSAJE = '<div class="msg yo"><span class="adjunto">recibo_restaurante.jpg</span>Le tomé foto a la cuenta del restaurante. ¿Me cobraron bien?</div>';
+  const CARGO = '<div class="msg sistema">Cargó habilidad <b>factura-a-web</b></div>';
+  const EJECUTO = '<div class="msg sistema">Leyó <b>references/</b> y ejecutó <b>revisar_totales.py</b> y <b>generar_web.py</b></div>';
+  const pasos = [
+    { txt: "Así empieza toda conversación. Hay cuatro skills instaladas, pero Claude solo conoce su nombre y su descripción: unas 100 palabras en total. Pulsa el botón para enviar el mensaje.", mem: 4, et: "~100 palabras", n: [1], chat: "" },
+    { txt: "Llega tu mensaje con la foto. Claude compara lo que pides con las cuatro descripciones. \"Cuenta del restaurante\" y \"¿me cobraron bien?\" encajan con la descripción de factura-a-web.", mem: 6, et: "~150 palabras", n: [1], chat: MENSAJE, revisar: true },
+    { txt: "Elige factura-a-web y abre su SKILL.md completo (unas 450 palabras). Las otras tres siguen cerradas: no gastan memoria. En claude.ai verías la línea \"Cargó habilidad factura-a-web\".", mem: 24, et: "~600 palabras", n: [1, 2], elegir: true, chat: MENSAJE + CARGO },
+    { txt: "Los pasos 2, 3 y 4 piden abrir dos documentos de references/ y ejecutar dos scripts. Los documentos sí entran a la memoria; de los scripts solo llega lo que imprimen (la tabla), no su código, y la plantilla de assets/ ni siquiera se lee.", mem: 38, et: "~950 palabras", n: [1, 2, 3], elegir: true, chat: MENSAJE + CARGO + EJECUTO },
+    { txt: "Listo. Se usó una sola skill, las cuentas las hizo Python y la memoria quedó con espacio de sobra. Abajo ves la captura real de esta misma prueba en claude.ai.", mem: 40, et: "~1.000 palabras", n: [1, 2, 3], elegir: true, fin: true, chat: MENSAJE + CARGO + EJECUTO + '<div class="msg ia">No, te cobraron $4.680 de más. Aquí está factura.html.</div>' }
+  ];
+  let i = 0;
+  const minis = [...document.querySelectorAll(".mini")];
+  const btn = document.getElementById("paso-sig");
+  function pintar() {
+    const p = pasos[i];
+    document.getElementById("narracion").textContent = p.txt;
+    document.getElementById("paso-actual").textContent = "Paso " + i + " de " + (pasos.length - 1);
+    document.getElementById("medidor").style.width = p.mem + "%";
+    document.getElementById("medidor-txt").textContent = p.et;
+    [1, 2, 3].forEach((n) => document.getElementById("nivel" + n).classList.toggle("on", p.n.includes(n)));
+    minis.forEach((m) => {
+      m.classList.toggle("revisando", !!p.revisar);
+      m.classList.toggle("elegida", !!p.elegir && m.dataset.skill === "factura");
+      m.classList.toggle("descartada", !!p.elegir && m.dataset.skill !== "factura");
+    });
+    chat.innerHTML = p.chat || '<p class="muted" style="font-size:.9rem">Aquí aparecerá la conversación.</p>';
+    btn.textContent = i === 0 ? "Enviar mensaje de ejemplo" : p.fin ? "Terminado" : "Siguiente paso";
+    btn.disabled = !!p.fin;
+    document.getElementById("sim-real").hidden = !p.fin;
+  }
+  btn.addEventListener("click", () => { if (i < pasos.length - 1) { i++; pintar(); } });
+  document.getElementById("paso-reset").addEventListener("click", () => { i = 0; pintar(); });
+  pintar();
+})();
+
+// Recorridos con capturas (02, 06 y 07)
+(function () {
+  const M = 1046, A = 653;
+  const recorridos = {
+    cuenta: [
+      { b: "1 · Capacidades", img: "img/capacidades.jpg", w: M, h: A, marcas: [[21.5, 13.5, 77, 12, "1"], [1.4, 47.5, 17, 5.2, "2"]],
+        t: "Comprobar la ejecución de código", p: ["Entra a <a href='https://claude.ai' target='_blank' rel='noopener'>claude.ai</a>, haz clic en tu nombre (abajo a la izquierda) y elige <strong>Configuración</strong>.", "En el menú de la ventana, elige <strong>Capacidades</strong> (marca 2).", "Baja hasta <strong>Ejecución de código y creación de archivos</strong> (marca 1). Dice \"Necesario para Skills\". En las cuentas nuevas ya viene encendida; si está apagada, enciéndela."] },
+      { b: "2 · Skills", img: "img/skills.jpg", w: M, h: A, marcas: [[1.4, 91.8, 17, 5.2, "1"], [87.2, 8.8, 11, 5, "2"]],
+        t: "Encontrar tus skills", p: ["En la misma ventana, en el menú de la izquierda, baja al grupo <strong>Personalización</strong> y elige <strong>Skills</strong> (marca 1). El enlace \"Las Skills se movieron a Personalizar\" de Capacidades lleva al mismo lugar.","En <strong>Tuyos</strong> aparecen las que subas, en \"Creado por ti\". Abajo están las de Anthropic.", "El botón <strong>Agregar</strong> (marca 2) es por donde subirás tu ZIP en la sección 05."] }
+    ],
+    subir: [
+      { b: "1 · Agregar", img: "img/agregar.jpg", w: M, h: A, marcas: [[80.5, 14.3, 18, 15.5, "1"]],
+        t: "Agregar → Subir Skill", p: ["En Configuración → Personalización → Skills pulsa <strong>Agregar</strong>.", "Elige <strong>Subir Skill</strong>.", "Las otras opciones crean la skill escribiendo en un formulario (<strong>Crear una Skill</strong>) o conversando con Claude (<strong>Crear con Claude</strong>)."] },
+      { b: "2 · Elegir archivo", img: "img/subir_vacio.jpg", w: M, h: A, marcas: [[23.3, 33, 74, 19.5, "1"]],
+        t: "Arrastra el ZIP", p: ["Arrastra <code>factura-a-web.zip</code> de la carpeta <code>kit_factura</code> al recuadro punteado, o haz clic en él para buscarlo. Súbelo sin descomprimirlo.", "Fíjate en la regla de abajo: el ZIP debe incluir un <code>SKILL.md</code>."] },
+      { b: "3 · Vista previa", img: "img/vista_previa.jpg", w: M, h: A, marcas: [[23.3, 57, 74, 23.5, "1"]],
+        t: "Revisa la vista previa", p: ["Antes de subir, claude.ai muestra el <strong>nombre</strong> y la <strong>descripción</strong> que leyó de tu <code>SKILL.md</code> (marca 1).", "Si no aparece la descripción o sale un error en rojo, no subas: corrige primero.", "Pulsa <strong>Subir</strong>. Se ejecuta un escaneo de seguridad."] },
+      { b: "4 · ¿Reemplazar?", img: "img/reemplazar.jpg", w: M, h: A, marcas: [[30, 35, 40, 29.5, "1"]],
+        t: "Si ya existía, se guarda una versión nueva", p: ["Si ya subiste una skill con el mismo nombre, claude.ai pregunta si quieres <strong>reemplazarla</strong> (marca 1).", "Las versiones anteriores quedan en el historial de la skill: puedes volver atrás si la nueva sale peor."] },
+      { b: "5 · Lista", img: "img/skill_subida.jpg", w: M, h: A, marcas: [[75, 16, 18.5, 5.5, "1"], [24, 41.5, 23.5, 45, "2"]],
+        t: "Tu skill está instalada", p: ["El interruptor debe quedar encendido (marca 1). Si está apagado, Claude no la usa. Al lado dice la versión (v2, v3…).", "En <strong>Contenido</strong> ves tus archivos con sus carpetas (marca 2). Si falta alguno, el ZIP quedó incompleto.", "El botón <strong>Probar en chat</strong> abre una conversación para probarla."] }
+    ],
+    probar: [
+      { b: "1 · Mensaje", img: "img/mensaje.jpg", w: 675, h: 256, marcas: [],
+        t: "Adjunta la foto y pide algo natural", p: ["Abre un chat nuevo, adjunta <code>recibo_restaurante.jpg</code> con el botón <strong>+</strong> y escribe: <em>Le tomé foto a la cuenta del restaurante. ¿Me cobraron bien? Hazme una página web con el resultado</em>.", "No escribas el nombre de la skill: lo que se prueba es que la descripción baste para activarla."] },
+      { b: "2 · Pasos", img: "img/pasos.jpg", w: 635, h: 490, marcas: [[2.5, 44.5, 39.5, 7.5, "1"], [2.5, 52, 95, 46, "2"]],
+        t: "Comprueba que se usó la skill", p: ["Despliega la línea gris debajo de la primera respuesta.", "<strong>Cargó habilidad factura-a-web</strong> (marca 1) confirma la activación.", "Luego aparecen la lectura de references, la ejecución de los scripts y el archivo compartido (marca 2)."] },
+      { b: "3 · Resultado", img: "img/resultado.jpg", w: 1273, h: 653, marcas: [[1.5, 7.8, 35, 5, "1"], [2.5, 74, 43, 25, "2"], [54.4, 32, 40, 13, "3"]],
+        t: "Compara con lo que esperabas", p: ["La respuesta empieza con la conclusión: <strong>te cobraron $4.680 de más</strong> (marca 1).", "Explica cada error con números: la limonada y la propina sobre el impuesto (marca 2).", "La página muestra el aviso rojo y las notas de la propina (marca 3). ¿Coincide con lo esperado en las tarjetas de las fotos, más abajo? Entonces la prueba pasó."] },
+      { b: "4 · Caso correcto", img: "img/resultado_super.jpg", w: 1273, h: 653, marcas: [[54.4, 32, 40, 13, "1"]],
+        t: "Prueba también el caso que debe salir bien", p: ["Repite con <code>recibo_supermercado.jpg</code>.", "Debe decir que todas las cuentas cuadran y mostrar el aviso en verde (marca 1).", "Una skill que encuentra errores donde no los hay también está mal: por eso se prueban los dos casos."] },
+      { b: "5 · Algo inesperado", img: "img/idea_v4.jpg", w: 1273, h: 653, marcas: [[1.5, 15.5, 43, 14, "1"]],
+        t: "Cuando Claude encuentra algo que no esperabas", p: ["En una prueba con una tirilla de alimentos, las sumas cuadraban, pero Claude avisó que el arroz, la leche y los huevos no suelen pagar IVA del 19 % (marca 1).", "Lo supo por <code>references/reglas.md</code>, aunque el script no revisa eso. Es el reto de la v4 que verás abajo."] }
+    ]
+  };
+  document.querySelectorAll("[data-recorrido]").forEach((caja) => {
+    const pasos = recorridos[caja.dataset.recorrido];
+    const botones = caja.querySelector(".recorrido-pasos");
+    const img = caja.querySelector("img");
+    const captura = caja.querySelector(".captura");
+    const texto = caja.querySelector(".recorrido-texto");
+    let i = 0;
+    botones.innerHTML = pasos.map((p, k) => '<button type="button" aria-pressed="false" data-k="' + k + '">' + p.b + "</button>").join("");
+    function pintar() {
+      const p = pasos[i];
+      img.src = p.img; img.width = p.w; img.height = p.h; img.alt = p.t;
+      captura.querySelectorAll(".marca").forEach((m) => m.remove());
+      p.marcas.forEach(([x, y, w, h, n]) => captura.insertAdjacentHTML("beforeend", '<div class="marca" style="left:' + x + "%;top:" + y + "%;width:" + w + "%;height:" + h + '%"><span>' + n + "</span></div>"));
+      texto.innerHTML = "<span class='paso-actual'>Paso " + (i + 1) + " de " + pasos.length + "</span><h3>" + p.t + "</h3><ol class='pasos'>" + p.p.map((x) => "<li>" + x + "</li>").join("") + "</ol>";
+      botones.querySelectorAll("button").forEach((b, k) => b.setAttribute("aria-pressed", k === i));
+      caja.querySelector("[data-ant]").disabled = i === 0;
+      caja.querySelector("[data-sig]").disabled = i === pasos.length - 1;
+    }
+    botones.addEventListener("click", (e) => { const b = e.target.closest("button"); if (b) { i = +b.dataset.k; pintar(); } });
+    caja.querySelector("[data-ant]").addEventListener("click", () => { if (i > 0) { i--; pintar(); } });
+    caja.querySelector("[data-sig]").addEventListener("click", () => { if (i < pasos.length - 1) { i++; pintar(); } });
+    pintar();
+  });
+})();
+
+// 03 Clasificar archivos
+(function () {
+  const items = [
+    ["Los pasos que sigue Claude, en orden", "skill", "Es la receta: siempre en SKILL.md."],
+    ["La regla de que la propina va sobre el subtotal", "references", "Es conocimiento del tema que Claude debe entender y poder explicar."],
+    ["El código que suma los productos y calcula el IVA", "scripts", "Debe dar un resultado exacto cada vez: se ejecuta."],
+    ["El diseño HTML de la página, con un hueco para los datos", "assets", "Forma parte del resultado; Claude no necesita leerlo."],
+    ["Un ejemplo de cómo llenar el JSON de la factura", "references", "Es texto de consulta que Claude lee en el paso 2."],
+    ["El programa que mete el JSON en la plantilla", "scripts", "Es código: siempre hace lo mismo y se ejecuta."],
+    ["El logo del restaurante para la página", "assets", "Es un archivo que se usa en el resultado, no se lee."],
+    ["El documento de diseño (DISENO.md) con el pseudocódigo", "fuera", "Se hace antes y va en tu repositorio, no dentro de la skill."]
+  ];
+  const nombres = { skill: "SKILL.md", references: "references/", scripts: "scripts/", assets: "assets/", fuera: "fuera del ZIP" };
+  const caja = document.getElementById("clasificar");
+  caja.innerHTML = items.map(([t], k) => '<div class="fila" data-k="' + k + '"><span>' + t + '</span><div class="opciones">' + Object.entries(nombres).map(([v, n]) => '<button type="button" data-v="' + v + '">' + n + "</button>").join("") + '</div><p class="porque" hidden></p></div>').join("");
+  const resp = {};
+  caja.addEventListener("click", (e) => {
+    const b = e.target.closest("button[data-v]"); if (!b) return;
+    const fila = b.closest(".fila"), k = +fila.dataset.k, [, correcta, porque] = items[k];
+    const ok = b.dataset.v === correcta;
+    resp[k] = ok;
+    fila.classList.toggle("bien", ok); fila.classList.toggle("mal", !ok);
+    const p = fila.querySelector(".porque"); p.hidden = false;
+    p.innerHTML = "<strong>" + (ok ? "Correcto: " : "Va en " + nombres[correcta] + ": ") + "</strong>" + porque;
+    const n = Object.keys(resp).length, bien = Object.values(resp).filter(Boolean).length;
+    document.getElementById("marcador-clasificar").textContent = bien + " de " + n + " correctas" + (n === items.length ? (bien === items.length ? ". Distingues las cuatro piezas." : ". Relee las cuatro tarjetas y vuelve a intentar.") : "");
+  });
+})();
+
+// 03 Anatomía
+(function () {
+  const textos = {
+    delim: ["Las líneas ---", "Encierran el encabezado (se llama YAML). La primera línea del archivo debe ser exactamente <code>---</code>. Si faltan, claude.ai no encuentra el nombre ni la descripción y rechaza la skill."],
+    name: ["name", "El identificador: solo minúsculas, números y guiones, máximo 64 caracteres, y <strong>igual al nombre de la carpeta</strong>. No puede contener claude ni anthropic."],
+    desc: ["description", "Lo único que Claude lee siempre para decidir si usa la skill. Tiene dos partes: <strong>qué hace</strong> (\"Convierte la foto…\") y <strong>cuándo usarla</strong> (\"Úsala cuando…\"), con las palabras que escribiría una persona. Máximo 1024 caracteres."],
+    titulo: ["Título e introducción", "Aquí empieza el cuerpo: Claude solo lo lee cuando la skill se activó. Dice el objetivo y una regla general: no saltarse la verificación."],
+    paso1: ["Paso 1 · Leer la factura", "Dice qué datos buscar, en lista, y advierte sobre las fotos: confundir 3 con 8 es el error típico. La última frase evita que la IA invente datos."],
+    paso2: ["Paso 2 · Pasar a JSON (references)", "No explica el formato aquí: manda a <code>references/campos.md</code>, que Claude abre solo en este momento. Así el SKILL.md queda corto."],
+    paso3: ["Paso 3 · Verificar (scripts + references)", "Las cuentas las hace Python, no el modelo. Y nombra <code>references/reglas.md</code> para que Claude entienda y explique la regla de la propina."],
+    paso4: ["Paso 4 · Generar la página (scripts + assets)", "Otro script mete los datos en <code>assets/plantilla.html</code>. Por eso la página sale igual siempre, para cualquier persona."],
+    paso5: ["Paso 5 · Formato de la respuesta", "Dice qué entregar y en qué orden. Sin este paso cada respuesta tendría otra forma."]
+  };
+  const panel = document.getElementById("explica");
+  const leyenda = document.getElementById("leyenda");
+  leyenda.innerHTML = Object.entries(textos).map(([k, [t]]) => '<button type="button" data-p="' + k + '">' + t + "</button>").join("");
+  function elegir(p) {
+    document.querySelectorAll(".parte").forEach((el) => el.classList.toggle("sel", el.dataset.p === p));
+    leyenda.querySelectorAll("button").forEach((b) => b.classList.toggle("sel", b.dataset.p === p));
+    const [t, d] = textos[p];
+    panel.innerHTML = "<h3>" + t + "</h3><p>" + d + "</p>";
+  }
+  document.querySelectorAll(".parte").forEach((el) => el.addEventListener("click", () => elegir(el.dataset.p)));
+  leyenda.addEventListener("click", (e) => { const b = e.target.closest("button"); if (b) elegir(b.dataset.p); });
+})();
+
+// Descargas: en claude.ai usa la capacidad de descargas (pide confirmación); en la copia local, un enlace normal
+async function ofrecerDescarga(nombre, obtener, estado) {
+  const aviso = (txt) => { if (estado) estado.textContent = txt; };
+  try {
+    const datos = await obtener();
+    const dl = window.claude && window.claude.use ? await window.claude.use("downloads") : null;
+    if (dl) {
+      await dl.save({ filename: nombre, data: datos });
+      aviso("Descargado: " + nombre);
+      return;
+    }
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(datos);
+    a.download = nombre;
+    document.body.appendChild(a); a.click(); a.remove();
+    aviso("Descargado: " + nombre);
+  } catch (e) {
+    aviso(e && e.code === "declined" ? "Descarga cancelada." : "No se pudo descargar aquí. Pídele el archivo a tu profesor.");
+  }
+}
+document.querySelectorAll("[data-descargar]").forEach((b) => b.addEventListener("click", () =>
+  ofrecerDescarga(b.dataset.nombre, () => fetch(b.dataset.descargar).then((r) => { if (!r.ok) throw new Error("no encontrado"); return r.blob(); }), document.getElementById("descarga-estado"))));
+// ZIP armado en el navegador con los archivos que muestra el paso 4.2 (sin compresión, rutas con /)
+function crearZip(archivos) {
+  const tabla = new Uint32Array(256).map((_, n) => { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1; return c >>> 0; });
+  const crc32 = (b) => { let c = 0xffffffff; for (const x of b) c = tabla[(c ^ x) & 0xff] ^ (c >>> 8); return (c ^ 0xffffffff) >>> 0; };
+  const cod = new TextEncoder(), partes = [], central = [];
+  let offset = 0;
+  const cab = (largo) => { const v = new DataView(new ArrayBuffer(largo)); return v; };
+  archivos.forEach(([nombre, contenido]) => {
+    const n = cod.encode(nombre), d = typeof contenido === "string" ? cod.encode(contenido) : contenido, crc = crc32(d);
+    const l = cab(30);
+    [[0, 0x04034b50, 4], [4, 20, 2], [6, 0x0800, 2], [8, 0, 2], [10, 0, 2], [12, 0x21, 2], [14, crc, 4], [18, d.length, 4], [22, d.length, 4], [26, n.length, 2], [28, 0, 2]]
+      .forEach(([o, val, t]) => t === 4 ? l.setUint32(o, val, true) : l.setUint16(o, val, true));
+    partes.push(l, n, d);
+    const c = cab(46);
+    [[0, 0x02014b50, 4], [4, 20, 2], [6, 20, 2], [8, 0x0800, 2], [10, 0, 2], [12, 0, 2], [14, 0x21, 2], [16, crc, 4], [20, d.length, 4], [24, d.length, 4], [28, n.length, 2], [30, 0, 2], [32, 0, 2], [34, 0, 2], [36, 0, 2], [38, 0, 4], [42, offset, 4]]
+      .forEach(([o, val, t]) => t === 4 ? c.setUint32(o, val, true) : c.setUint16(o, val, true));
+    central.push(c, n);
+    offset += 30 + n.length + d.length;
+  });
+  const tamCentral = central.reduce((s, x) => s + x.byteLength, 0);
+  const fin = cab(22);
+  [[0, 0x06054b50, 4], [4, 0, 2], [6, 0, 2], [8, archivos.length, 2], [10, archivos.length, 2], [12, tamCentral, 4], [16, offset, 4], [20, 0, 2]]
+    .forEach(([o, val, t]) => t === 4 ? fin.setUint32(o, val, true) : fin.setUint16(o, val, true));
+  return new Blob([...partes, ...central, fin], { type: "application/zip" });
+}
+// Kit de clase: la skill abierta, la skill en ZIP, las dos fotos y el diseño
+const kitFotos = {};
+async function bytesFoto(nombre) {
+  if (kitFotos[nombre]) return kitFotos[nombre];
+  try {
+    const r = await fetch("img/" + nombre);
+    if (!r.ok) throw new Error("no encontrado");
+    kitFotos[nombre] = new Uint8Array(await r.arrayBuffer());
+  } catch (e) {
+    // respaldo: redibuja la foto que ya muestra la página
+    const img = document.querySelector('img[src$="' + nombre + '"]');
+    if (!img) throw e;
+    if (!img.complete) await new Promise((ok, mal) => { img.onload = ok; img.onerror = mal; });
+    const lienzo = document.createElement("canvas");
+    lienzo.width = img.naturalWidth; lienzo.height = img.naturalHeight;
+    lienzo.getContext("2d").drawImage(img, 0, 0);
+    const blob = await new Promise((ok) => lienzo.toBlob(ok, "image/jpeg", 0.92));
+    kitFotos[nombre] = new Uint8Array(await blob.arrayBuffer());
+  }
+  return kitFotos[nombre];
+}
+["recibo_restaurante.jpg", "recibo_supermercado.jpg"].forEach((n) => bytesFoto(n).catch(() => {}));
+async function armarKit() {
+  const skill = [
+    ["SKILL.md", "pf-skill"], ["references/campos.md", "pf-campos"], ["references/reglas.md", "pf-reglas"],
+    ["scripts/revisar_totales.py", "pf-revisar"], ["scripts/generar_web.py", "pf-generar"], ["assets/plantilla.html", "pf-plantilla"]
+  ].map(([ruta, id]) => ["factura-a-web/" + ruta, document.getElementById(id).textContent + "\n"]);
+  const zipSkill = new Uint8Array(await crearZip(skill).arrayBuffer());
+  return crearZip([
+    ["kit_factura/factura-a-web.zip", zipSkill],
+    ...skill.map(([ruta, texto]) => ["kit_factura/" + ruta, texto]),
+    ["kit_factura/recibo_restaurante.jpg", await bytesFoto("recibo_restaurante.jpg")],
+    ["kit_factura/recibo_supermercado.jpg", await bytesFoto("recibo_supermercado.jpg")],
+    ["kit_factura/DISENO_factura-a-web.md", document.getElementById("kit-diseno").textContent + "\n"]
+  ]);
+}
+document.getElementById("descargar-kit").addEventListener("click", () =>
+  ofrecerDescarga("kit_factura.zip", armarKit, document.getElementById("descarga-estado")));
+
+
+// 07 Juego de activación
+(function () {
+  const casos = [
+    ["Le tomé foto a la cuenta del restaurante, ¿me cobraron bien?", true, true, "Hay un recibo en foto y pide revisar si está bien cobrado: está en la descripción."],
+    ["¿Me revisas si el IVA de esta tirilla está bien?", true, true, "\"Tirilla\" y \"revisar el IVA\" aparecen en la descripción, aunque no pida una página."],
+    ["Hazme una página web para mi emprendimiento de tortas", false, false, "Pide una página, pero no hay factura ni recibo. La descripción dice \"cuando alguien suba una factura o un recibo\"."],
+    ["Resume este PDF de la clase de bases de datos", true, false, "Hay un PDF, pero no es una factura. Encajaría con resumir-apuntes."],
+    ["Pasa esta factura del supermercado a HTML", true, true, "\"Factura\", \"supermercado\" y \"HTML\" están en la descripción."],
+    ["¿Cuál es la capital de Francia?", false, false, "Nada que ver con facturas. Claude responde normal, sin abrir ninguna skill."],
+    ["¿La propina de esta cuenta está bien calculada?", true, true, "La descripción menciona revisar la propina."],
+    ["Calcula el 19 % de IVA de 50.000 pesos", false, false, "Es una cuenta suelta, sin factura. Claude la responde sin skill (son $9.500)."]
+  ];
+  const juego = document.getElementById("juego");
+  juego.innerHTML = casos.map(([m, adj], k) =>
+    '<div class="tarjeta" data-k="' + k + '"><p class="que-dice">' + (adj ? '<span class="adjunto">archivo</span>' : "") + "“" + m + "”</p>" +
+    '<div class="btn-row"><button class="btn" type="button" data-r="si">Sí se activa</button><button class="btn" type="button" data-r="no">No se activa</button></div><p class="porque" hidden></p></div>').join("");
+  const respondidas = {};
+  juego.addEventListener("click", (e) => {
+    const b = e.target.closest("button[data-r]"); if (!b) return;
+    const t = b.closest(".tarjeta"), k = +t.dataset.k, [, , correcto, porque] = casos[k];
+    const acierto = (b.dataset.r === "si") === correcto;
+    respondidas[k] = acierto;
+    t.classList.toggle("acierto", acierto); t.classList.toggle("error", !acierto);
+    const p = t.querySelector(".porque"); p.hidden = false;
+    p.innerHTML = "<strong>" + (correcto ? "Sí se activa." : "No se activa.") + "</strong> " + porque;
+    const n = Object.keys(respondidas).length, bien = Object.values(respondidas).filter(Boolean).length;
+    document.getElementById("marcador").textContent = bien + " de " + n + " correctas" + (n === casos.length ? (bien === casos.length ? ". Entiendes cómo decide Claude." : ". Relee la descripción resaltada y vuelve a intentar las que fallaste.") : "");
+  });
+})();
+
+// 06 ZIP
+document.querySelectorAll(".zip").forEach((z) => z.addEventListener("click", () => {
+  document.querySelectorAll(".zip").forEach((o) => o.classList.remove("correcta", "incorrecta"));
+  void z.offsetWidth;
+  z.classList.add(z.dataset.ok === "si" ? "correcta" : "incorrecta");
+  document.getElementById("zip-veredicto").textContent = z.dataset.msg;
+}));
+
+// 07 Bitácora
+(function () {
+  const cuerpo = document.getElementById("bitacora");
+  let filas = almacen.leer("taller-bitacora-v3", null) || [
+    { m: "Le tomé foto a la cuenta del restaurante. ¿Me cobraron bien? Hazme una página web con el resultado", a: "recibo_restaurante.jpg", s: "", c: "" },
+    { m: "¿Esta tirilla está bien cobrada?", a: "recibo_supermercado.jpg", s: "", c: "" },
+    { m: "Hazme una página web para mi tienda", a: "(ninguno)", s: "", c: "" }
+  ];
+  const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  function pintar() {
+    cuerpo.innerHTML = filas.map((f, i) => "<tr><td>" + (i + 1) + '</td><td><input type="text" data-i="' + i + '" data-c="m" value="' + esc(f.m) + '" aria-label="Mensaje de la prueba ' + (i + 1) + '"></td>' +
+      '<td><input type="text" data-i="' + i + '" data-c="a" value="' + esc(f.a) + '" aria-label="Archivo de la prueba ' + (i + 1) + '"></td>' +
+      '<td><select data-i="' + i + '" data-c="s" aria-label="¿Se activó en la prueba ' + (i + 1) + '?">' + ["", "Sí", "No", "A medias"].map((o) => "<option" + (o === f.s ? " selected" : "") + ">" + o + "</option>").join("") + "</select></td>" +
+      '<td><input type="text" data-i="' + i + '" data-c="c" value="' + esc(f.c) + '" aria-label="Cambio después de la prueba ' + (i + 1) + '"></td></tr>').join("");
+  }
+  cuerpo.addEventListener("input", (e) => { const el = e.target; if (el.dataset.i === undefined) return; filas[+el.dataset.i][el.dataset.c] = el.value; almacen.guardar("taller-bitacora-v3", filas); });
+  document.getElementById("bit-add").addEventListener("click", () => { const u = filas[filas.length - 1] || {}; filas.push({ m: u.m || "", a: u.a || "", s: "", c: "" }); almacen.guardar("taller-bitacora-v3", filas); pintar(); });
+  document.getElementById("bit-reset").addEventListener("click", () => { filas = [{ m: "", a: "", s: "", c: "" }]; almacen.guardar("taller-bitacora-v3", filas); pintar(); });
+  pintar();
+})();
+
+// 08 Asistente: preguntas que arman la skill, mensajes para Claude, revisión y ZIP
+function crearAsistente(P, modo) {
+  const $ = (id) => document.getElementById(P + id);
+  if (!$("asistente")) return;
+  const esc = (x) => String(x == null ? "" : x).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const VACIO = () => ({
+    paso: 0, nombre: "", hace: "", entra: "", sale: "", sit: ["", "", ""],
+    refs: "", refsNombre: "", refsTema: "", refsTexto: "",
+    scr: "", scrNombre: "", scrHace: "", scrRecibe: "", scrImprime: "", scrTexto: "", scrSinPrueba: false,
+    ast: "", astNombre: "", astDescribe: "", astTexto: "",
+    respuesta: "", skill: "", skillEditado: false, tabla: "", ruta: ""
+  });
+  const IDEAS = {
+    apuntes: {
+      nombre: "resumir-apuntes",
+      hace: "Resume en una página el PDF o las notas de una clase y crea 10 preguntas de repaso",
+      entra: "el PDF o las notas de una clase",
+      sale: "un resumen de una página y 10 preguntas con su respuesta",
+      sit: ["suba un PDF o las notas de una clase", "pida un resumen o preguntas de repaso", "diga que tiene examen y quiere estudiar un tema"],
+      refs: "si", refsNombre: "formato", refsTema: "cómo debe ser el resumen (secciones y extensión) y cómo escribir buenas preguntas de repaso",
+      scr: "no", ast: "no"
+    }
+  };
+  const TABLAS = ["usuarios", "empresas", "retos", "categorias", "prioridades", "registros", "evidencias"];
+  const criteriosVacios = (T, hus) => "# Criterios de aceptación · tabla " + T + "\n\nPega aquí los criterios de tu" + (hus.length > 1 ? "s tarjetas " : " tarjeta ") + hus.join(" y ") + " en Kaizen, tal cual.\n" + hus.map((h) => "\n## HU " + h + "\n\n1. \n").join("");
+  const cierre = "Termina con el siguiente paso: copiar el código en src/, ejecutarlo en tu computador, subir los cambios a GitHub y mover la tarjeta a Hecho en Kaizen.";
+  const RUTAS = (T) => ({
+    f01x01: {
+      nombre: "revisar-simulacion-" + T,
+      hace: "Revisa la simulación (HU F01) y la exportación (HU X01) de la tabla " + T + " del proyecto integrador contra los criterios de Kaizen, encuentra lo que está mal y entrega el código corregido",
+      entra: "los scripts simular_" + T + ".py y exportar_" + T + ".py y, si existen, los archivos " + T + "_sucio.csv, .xlsx y .json",
+      sale: "una tabla con cada criterio en PASA o FALLA y los dos scripts corregidos",
+      sit: ["suba su script simular_" + T + ".py o exportar_" + T + ".py", "suba los archivos " + T + "_sucio.csv, .xlsx o .json", "pida revisar o corregir su simulación o su exportación de " + T],
+      refs: "si", refsNombre: "criterios", refsTema: "los criterios de aceptación de las HU F01 y X01 de la tabla " + T + ", copiados de Kaizen", refsTexto: criteriosVacios(T, ["F01", "X01"]),
+      scr: "si", scrNombre: "revisar_datos", scrHace: "Cuenta las filas, revisa que estén las columnas que pide la HU y cuenta los nulos y los duplicados de cada columna",
+      scrRecibe: T + "_sucio.csv, " + T + "_sucio.xlsx y " + T + "_sucio.json", scrImprime: "una tabla en Markdown con las columnas Comprobación | Esperado | Encontrado | Estado (PASA o FALLA)",
+      ast: "no",
+      respuesta: "Empieza con la conclusión: si la simulación y la exportación cumplen o no la HU.\nMuestra una tabla por HU con cada criterio de references/criterios.md, su estado (PASA o FALLA) y el cambio mínimo.\nSi llegaron los archivos de datos, copia también la tabla que imprime el script.\nExplica cada FALLA con lo encontrado y lo esperado, en frases cortas.\nEntrega simular_" + T + ".py y exportar_" + T + ".py corregidos y completos, cada uno en su propio bloque de código, listos para copiar en src/.\n" + cierre
+    },
+    l01: {
+      nombre: "limpiar-" + T,
+      hace: "Limpia los datos sucios de la tabla " + T + " del proyecto integrador con pandas, siguiendo los criterios de la HU L01 de Kaizen, y entrega el archivo limpio y el código",
+      entra: "el archivo " + T + "_sucio.csv",
+      sale: "el archivo " + T + "_limpio.csv, el antes y después de la limpieza y el código de limpiar_" + T + ".py",
+      sit: ["suba el archivo " + T + "_sucio.csv", "pida limpiar los datos de " + T, "pregunte cómo hacer la HU L01 de limpieza de " + T],
+      refs: "si", refsNombre: "criterios", refsTema: "los criterios de aceptación de la HU L01 de la tabla " + T + ", copiados de Kaizen", refsTexto: criteriosVacios(T, ["L01"]),
+      scr: "si", scrNombre: "limpiar_" + T, scrHace: "Lee " + T + "_sucio.csv con pandas, imprime el diagnóstico (shape, info, nulos y duplicados), corrige cada error que piden los criterios, imprime el diagnóstico otra vez y guarda " + T + "_limpio.csv",
+      scrRecibe: T + "_sucio.csv", scrImprime: "el diagnóstico antes y después de limpiar y cuántas filas se eliminaron",
+      ast: "no",
+      respuesta: "Empieza con un resumen: cuántas filas había, cuántas quedaron y qué se corrigió.\nMuestra el antes y el después que imprimió el script.\nEntrega " + T + "_limpio.csv para descargar.\nEntrega el código completo de scripts/limpiar_" + T + ".py en un bloque, listo para copiar en src/limpiar_" + T + ".py.\nSi algún criterio de references/criterios.md no se cumplió, dilo y explica por qué.\n" + cierre
+    },
+    q01: {
+      nombre: "consultar-" + T,
+      hace: "Responde las cinco consultas de la HU Q01 sobre la tabla " + T + " del proyecto integrador con pandas y entrega los resultados y el código",
+      entra: "el archivo " + T + "_limpio.csv",
+      sale: "las cinco respuestas, un CSV por consulta y el código de consultas_" + T + ".py",
+      sit: ["suba el archivo " + T + "_limpio.csv", "pida hacer las consultas de " + T, "pregunte cómo hacer la HU Q01 con groupby"],
+      refs: "si", refsNombre: "criterios", refsTema: "los criterios de aceptación de la HU Q01 de la tabla " + T + ", con las cinco consultas, copiados de Kaizen", refsTexto: criteriosVacios(T, ["Q01"]),
+      scr: "si", scrNombre: "consultas_" + T, scrHace: "Lee " + T + "_limpio.csv y resuelve las cinco consultas de la HU, cada una en su propia función y al menos dos con groupby; imprime el título y el resultado de cada una y guarda " + T + "_consulta_N.csv",
+      scrRecibe: T + "_limpio.csv", scrImprime: "el título y el resultado de cada consulta, en orden",
+      ast: "no",
+      respuesta: "Empieza con una frase que resuma lo más importante que muestran los datos.\nMuestra cada consulta con su pregunta y su resultado, en orden.\nEntrega los cinco archivos " + T + "_consulta_N.csv para descargar.\nEntrega el código completo de scripts/consultas_" + T + ".py en un bloque, listo para copiar en src/consultas_" + T + ".py.\n" + cierre
+    },
+    g01: {
+      nombre: "graficar-" + T,
+      hace: "Crea las tres gráficas de la HU G01 de la tabla " + T + " del proyecto integrador con matplotlib, escribe las conclusiones y entrega las imágenes y el código",
+      entra: "el archivo " + T + "_limpio.csv",
+      sale: "tres gráficas PNG, las conclusiones y el código de reporte_" + T + ".py",
+      sit: ["suba el archivo " + T + "_limpio.csv y pida gráficas", "pida el reporte o las conclusiones de " + T, "pregunte cómo hacer la HU G01 con matplotlib"],
+      refs: "si", refsNombre: "criterios", refsTema: "los criterios de aceptación de la HU G01 de la tabla " + T + ", con las tres gráficas y las preguntas de las conclusiones, copiados de Kaizen", refsTexto: criteriosVacios(T, ["G01"]),
+      scr: "si", scrNombre: "reporte_" + T, scrHace: "Lee " + T + "_limpio.csv, crea las tres gráficas de la HU con título, nombre en los dos ejes y tight_layout, las guarda en reportes/ con dpi=120 y plt.close(), y al final imprime las conclusiones",
+      scrRecibe: T + "_limpio.csv", scrImprime: "la ruta de cada gráfica y las conclusiones",
+      ast: "no",
+      respuesta: "Muestra las tres gráficas.\nEntrega los tres archivos PNG para descargar.\nEscribe las conclusiones que imprimió el script, respondiendo las preguntas de la HU.\nEntrega el código completo de scripts/reporte_" + T + ".py en un bloque, listo para copiar en src/reporte_" + T + ".py.\n" + cierre
+    }
+  });
+  const PASOS = ["La idea", "¿Cuándo se activa?", "Consulta · references/", "Herramienta · scripts/", "Molde · assets/", "Receta · SKILL.md", "Descargar"];
+  let s = Object.assign(VACIO(), almacen.leer("taller-asistente-" + modo, {}));
+  const guardar = () => almacen.guardar("taller-asistente-" + modo, s);
+
+  // ---------- datos derivados ----------
+  const slug = (x, def) => (x || "").trim().toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/\s+/g, "_").replace(/[^a-z0-9._-]/g, "") || def;
+  const nombre = () => s.nombre.trim() || "mi-skill";
+  const nombreValido = (n) => /^[a-z0-9]+(-[a-z0-9]+)*$/.test(n) && n.length <= 64 && !/claude|anthropic/.test(n);
+  const rRef = () => "references/" + slug(s.refsNombre, "guia").replace(/\.md$/, "") + ".md";
+  const rScr = () => "scripts/" + slug(s.scrNombre, "procesar").replace(/\.py$/, "") + ".py";
+  const rAst = () => { const n = slug(s.astNombre, "plantilla"); return "assets/" + (/\.[a-z0-9]+$/.test(n) ? n : n + ".html"); };
+  const argumento = () => { const m = (s.scrRecibe || "").match(/[\w.-]+\.\w+/); return m ? m[0] : "entrada.txt"; };
+  const sinPunto = (x) => x.trim().replace(/[.\s]+$/, "");
+  function descripcion() {
+    const sits = s.sit.map(sinPunto).filter(Boolean);
+    const lista = sits.length > 1 ? sits.slice(0, -1).join(", ") + " o " + sits[sits.length - 1] : (sits[0] || "…");
+    return (sinPunto(s.hace) || "Qué hace la skill") + ". Úsala cuando alguien " + lista + ".";
+  }
+  function archivos() {
+    const a = { "SKILL.md": s.skill };
+    if (s.refs === "si") a[rRef()] = s.refsTexto;
+    if (s.scr === "si") a[rScr()] = s.scrTexto;
+    if (s.ast === "si") a[rAst()] = s.astTexto;
+    return a;
+  }
+  function generarSkill() {
+    const P = []; let k = 1;
+    const titulo = nombre().replace(/-/g, " ").replace(/^./, (c) => c.toUpperCase());
+    P.push("## Paso " + k++ + ". Revisar lo que llegó\n\nRevisa " + (sinPunto(s.entra) || "lo que subió la persona") + ". Si falta algo, pídelo en una sola pregunta.");
+    if (s.refs === "si") P.push("## Paso " + k++ + ". Consultar la guía\n\nLee `" + rRef() + "`" + (s.refsTema.trim() ? ": tiene " + sinPunto(s.refsTema) : "") + ". No inventes reglas que no estén ahí.");
+    if (s.scr === "si") P.push("## Paso " + k++ + ". Procesar con el script\n\n```bash\npython " + rScr() + " " + argumento() + (s.ast === "si" ? " --salida resultado.html" : "") + "\n```\n\n" +
+      (s.scrHace.trim() ? sinPunto(s.scrHace) + ". " : "") + "Usa las rutas reales de los archivos que subió la persona. Copia lo que imprime el script sin cambiar ningún resultado. Si no llegó el archivo que necesita el script, dilo y sigue con lo demás." +
+      (s.ast === "si" ? " Con `--salida`, el script llena el molde `" + rAst() + "` y crea `resultado.html`." : ""));
+    if (s.ast === "si" && s.scr !== "si") P.push("## Paso " + k++ + ". Armar el resultado\n\nCopia el molde `" + rAst() + "`, reemplaza `__DATOS__` por los datos y entrega el archivo. No cambies su diseño.");
+    const resp = (s.respuesta.trim() || respuestaPorDefecto()).split("\n").map((l) => l.trim()).filter(Boolean).map((l, i) => (i + 1) + ". " + l.replace(/^\d+[.)]\s*/, "")).join("\n");
+    P.push("## Paso " + k++ + ". Responder\n\nResponde en español, en este orden:\n\n" + resp);
+    return "---\nname: " + nombre() + "\ndescription: " + descripcion() + "\n---\n\n# " + titulo + "\n\n" + (sinPunto(s.hace) || "Qué hace la skill") + ". Trabaja en este orden y no te saltes pasos.\n\n" + P.join("\n\n") + "\n";
+  }
+  const respuestaPorDefecto = () => "Empieza con la conclusión en una frase.\nMuestra " + (sinPunto(s.sale) || "el resultado") + ".\nExplica cada problema con el valor encontrado y el esperado.\nTermina con el siguiente paso que debe dar la persona.";
+
+  // ---------- mensajes para Claude ----------
+  const intro = () => "Estoy creando una skill para claude.ai llamada \"" + nombre() + "\". " + (sinPunto(s.hace) || "") + ".";
+  function msgRefs() {
+    return intro() + " Escribe el archivo " + rRef() + ": un documento de consulta que Claude lee cuando un paso de la skill lo pide." +
+      (s.refsTema.trim() ? " Tema: " + sinPunto(s.refsTema) + "." : "") +
+      " Debe ser corto, claro, en español, con títulos y listas, y tener solo lo que la skill necesita." +
+      (s.refsTexto.trim() ? "\n\nEsto es lo que ya tengo; úsalo como base:\n----------\n" + s.refsTexto.trim() + "\n----------" : "") +
+      "\n\nResponde solo con el contenido del archivo, en un bloque de código.";
+  }
+  function msgScr() {
+    return intro() + " Programa el archivo " + rScr() + " en Python.\n\n" +
+      "Qué debe hacer: " + (sinPunto(s.scrHace) || "(escríbelo en el asistente)") + ".\n" +
+      "Qué recibe: " + (sinPunto(s.scrRecibe) || "un archivo de entrada") + ".\n" +
+      "Cómo se ejecuta: python " + rScr() + " " + argumento() + "\n" +
+      "Qué debe imprimir: " + (sinPunto(s.scrImprime) || "el resultado") + ".\n\n" +
+      "Reglas: usa la librería estándar de Python y agrega otra solo si hace falta (por ejemplo pandas para leer CSV o Excel). Comenta cada función en español. No cambies el nombre del archivo ni el comando." +
+      (s.refs === "si" && s.refsTexto.trim() ? "\n\nEste es el documento " + rRef() + " que usa la skill:\n----------\n" + s.refsTexto.trim() + "\n----------" : "") +
+      (s.scrSinPrueba
+        ? "\n\nTodavía no tengo un archivo de prueba: crea tú uno pequeño con los casos y los errores que describen mis criterios, ejecuta el script con él, muéstrame la salida y al final dame el código completo en un solo bloque."
+        : "\n\nTe adjunto un archivo de prueba: ejecuta el script con él, muéstrame la salida y al final dame el código completo en un solo bloque.");
+  }
+  function msgAst() {
+    const html = /\.html?$/.test(rAst());
+    return intro() + " Crea el archivo " + rAst() + ": " + (sinPunto(s.astDescribe) || "un molde para el resultado") + ". Es un molde: Claude no lo lee; " +
+      (s.scr === "si" ? "lo llena el script " + rScr() + "." : "se copia y se llena con los datos.") +
+      (html ? " Debe ser una página HTML completa, con los estilos dentro del mismo archivo, que se vea bien en celular, y con un hueco __DATOS__ donde van los datos." : "") +
+      (s.scr === "si" ? "\n\nAdemás, dame una versión nueva de " + rScr() + " que, con la opción --salida ARCHIVO, lea ../" + rAst() + " relativa al script (usa Path(__file__)), reemplace __DATOS__ por los datos y guarde el resultado. Este es el script actual:\n----------\n" + (s.scrTexto.trim() || "(todavía no lo tengo)") + "\n----------" : "") +
+      "\n\nResponde con cada archivo completo en su propio bloque de código.";
+  }
+  const msgSkill = () => "Revisa este SKILL.md de mi skill para claude.ai. Mejora la redacción para que los pasos sean claros y concretos, pero no cambies name, los nombres de los archivos ni los comandos. La description debe tener máximo 1024 caracteres. Responde solo con el archivo completo, en un bloque de código.\n----------\n" + s.skill.trim();
+
+  // ---------- revisión ----------
+  function leerFrontmatter(texto) {
+    const l = (texto || "").replace(/\r/g, "").split("\n");
+    if (l[0].trim() !== "---") return null;
+    const fin = l.indexOf("---", 1); if (fin < 0) return null;
+    const c = {}; let act = null;
+    l.slice(1, fin).forEach((x) => { const m = x.match(/^([a-zA-Z_-]+):\s*(.*)$/); if (m) { act = m[1]; c[act] = m[2].trim(); } else if (act && /^\s+/.test(x)) c[act] += " " + x.trim(); });
+    return { c, cuerpo: l.slice(fin + 1).join("\n") };
+  }
+  const palabras = (x) => ((x || "").match(/\S+/g) || []).length;
+  function revision() {
+    const a = archivos(), f = leerFrontmatter(a["SKILL.md"]);
+    const name = f ? (f.c.name || "") : "", desc = f ? (f.c.description || "") : "", cuerpo = f ? f.cuerpo : "";
+    const r = [
+      ["falla", !!f, "SKILL.md empieza con una línea --- y cierra el encabezado con otra línea ---."],
+      ["falla", nombreValido(name), "name usa solo minúsculas, números y guiones (máximo 64) y no dice claude ni anthropic."],
+      ["falla", desc.length > 0 && desc.length <= 1024 && !/<[^>]*>/.test(desc), "description tiene entre 1 y 1024 caracteres (lleva " + desc.length + ") y no usa < >."],
+      ["aviso", /cuando/i.test(desc), "description dice cuándo usarla (\"Úsala cuando…\")."]
+    ];
+    const nombrados = new Set((cuerpo.match(/(?:references|scripts|assets)\/[A-Za-z0-9._-]+/g) || []).map((x) => x.replace(/\.+$/, "")));
+    nombrados.forEach((x) => { if (a[x] === undefined) r.push(["falla", false, "El SKILL.md nombra " + x + ", pero ese archivo no está en la carpeta."]); });
+    Object.keys(a).filter((x) => x !== "SKILL.md").forEach((x) => {
+      if (!nombrados.has(x)) r.push(["aviso", false, "Ningún paso nombra " + x + ": Claude nunca lo usará."]);
+      if (!a[x].trim()) r.push(["falla", false, x + " está vacío: vuelve a su paso y pega el contenido."]);
+      else if (/\.py$/.test(x) && !/^\s*def\s/m.test(a[x])) r.push(["aviso", false, x + " no tiene funciones (def). ¿Pegaste todo el código?"]);
+    });
+    return { r, name, desc, cuerpo, a };
+  }
+
+  // ---------- qué falta en cada paso ----------
+  function falta(p) {
+    if (p === 0 && modo === "hu" && (!s.tabla || !s.ruta)) return "Elige tu tabla y tu HU.";
+    if (p === 0) return !s.nombre.trim() ? "Escribe el nombre de la skill." : !nombreValido(s.nombre.trim()) ? "El nombre solo puede tener minúsculas, números y guiones." : !s.hace.trim() ? "Escribe qué hace la skill." : !s.entra.trim() || !s.sale.trim() ? "Escribe qué entra y qué sale." : "";
+    if (p === 1) return s.sit.some((x) => x.trim()) ? "" : "Escribe al menos una situación.";
+    if (p === 2) return !s.refs ? "Responde la pregunta." : s.refs === "si" && !s.refsTexto.trim() ? "Escribe o pega el contenido del documento." : s.refs === "si" && /Pega aquí/.test(s.refsTexto) ? "Pega tus criterios de Kaizen y borra el texto \"Pega aquí…\"." : "";
+    if (p === 3) return !s.scr ? "Responde la pregunta." : s.scr === "si" && !s.scrHace.trim() ? "Escribe qué debe hacer el script." : s.scr === "si" && !s.scrTexto.trim() ? "Falta el recuadro B: pega la respuesta de Claude (el código)." : s.scr === "si" && chequeo(s.scrTexto, "py")[0] === "mal" ? chequeo(s.scrTexto, "py")[1] : "";
+    if (p === 4) return !s.ast ? "Responde la pregunta." : s.ast === "si" && !s.astTexto.trim() ? "Falta el recuadro B: pega la respuesta de Claude (el molde)." : s.ast === "si" && chequeo(s.astTexto, "ast")[0] === "mal" ? chequeo(s.astTexto, "ast")[1] : "";
+    if (p === 5) return s.skill.trim() ? "" : "Falta el SKILL.md.";
+    return "";
+  }
+  const alcanzable = () => { let p = 0; while (p < PASOS.length - 1 && !falta(p)) p++; return p; };
+
+  // ---------- piezas de la vista ----------
+  const SUG = () => (modo === "hu" && s.tabla && s.ruta) ? RUTAS(s.tabla)[s.ruta] : null;
+  const sugBox = (id, val) => '<div class="sug-asis"><span class="sug-etq">Texto sugerido para tu HU · cópialo y ajústalo si hace falta</span><code id="' + P + 'sug-' + id + '">' + esc(val) + '</code><button class="btn" type="button" data-copiar="' + P + 'sug-' + id + '">Copiar</button></div>';
+  const sug = (k) => { const g = SUG(); if (!g || k === "refsTexto") return ""; const v = k.startsWith("sit.") ? (g.sit || [])[+k.slice(4)] : g[k]; return typeof v === "string" && v ? sugBox(k.replace(".", ""), v) : ""; };
+  const campo = (k, etiqueta, ayuda, tipo, ph) => '<label class="campo-asis" for=\"' + P + 'as-' + k + '">' + etiqueta + (ayuda ? ' <span class="ayuda">' + ayuda + "</span>" : "") +
+    (tipo === "area" ? '<textarea id=\"' + P + 'as-' + k + '" data-k="' + k + '" spellcheck="false" placeholder="' + esc(ph ? "Ejemplo: " + ph : "") + '">' + esc(s[k]) + "</textarea>"
+      : '<input type="text" id=\"' + P + 'as-' + k + '" data-k="' + k + '" value="' + esc(s[k]) + '" placeholder="' + esc(ph ? "Ejemplo: " + ph : "") + '" spellcheck="false">') + "</label>" + sug(k);
+  const siNo = (k, pregunta, si, no) => '<fieldset class="pregunta-asis"><legend>' + pregunta + '</legend><div class="opciones-asis">' +
+    '<label><input type="radio" name=\"' + P + 'as-' + k + '" data-k="' + k + '" value="si"' + (s[k] === "si" ? " checked" : "") + "><span>" + si + "</span></label>" +
+    '<label><input type="radio" name=\"' + P + 'as-' + k + '" data-k="' + k + '" value="no"' + (s[k] === "no" ? " checked" : "") + "><span>" + no + "</span></label></div>" + (SUG() && SUG()[k] ? '<p class="sug-asis sug-radio"><span class="sug-etq">Para tu HU</span><span>Elige: <strong>' + (SUG()[k] === "si" ? si : no) + "</strong></span></p>" : "") + "</fieldset>";
+  const cuando = (clase, titulo, siTxt, noTxt, kit) => '<div class="cuando ' + clase + '"><h4>' + titulo + '</h4><dl><dt>Úsalo cuando</dt><dd>' + siTxt + '</dd><dt>No hace falta</dt><dd>' + noTxt + '</dd><dt>En el kit</dt><dd>' + kit + "</dd></dl></div>";
+  const idaVuelta = (id, adjunto, k, etiqueta) => '<div class="ida-vuelta">' +
+    '<div class="iv-paso"><span class="iv-n">A</span><div class="iv-cuerpo"><b>Lleva el mensaje a Claude</b><ol class="como-usar">' +
+    "<li><span>Pulsa <strong>Copiar mensaje</strong>.</span></li><li><span>Pulsa <strong>Abrir chat nuevo</strong> y pega con <kbd>Ctrl</kbd> + <kbd>V</kbd>.</span></li>" +
+    (adjunto ? '<li><span id=\"' + P + 'as-adjunto">' + adjunto + "</span></li>" : "") + "<li><span>Envía y espera a que Claude termine. Puede tardar 3 o 4 minutos.</span></li></ol>" +
+    '<div class="btn-row"><button class="btn primario" type="button" data-copiar="' + P + id + '">Copiar mensaje</button><a class="btn" href="https://claude.ai/new" target="_blank" rel="noopener">Abrir chat nuevo</a></div>' +
+    '<details class="iv-ver"><summary>Ver el mensaje que vas a copiar</summary><pre id="' + P + id + '" class="iv-pre"></pre></details></div></div>' +
+    '<div class="iv-flecha" aria-hidden="true">Claude responde con un bloque de código</div>' +
+    '<div class="iv-paso"><span class="iv-n">B</span><div class="iv-cuerpo"><b>Trae la respuesta</b><p>Al final de la respuesta de Claude hay un <strong>bloque de código</strong> (el recuadro oscuro). Pulsa su botón de copiar y pégalo aquí.</p>' +
+    campo(k, etiqueta, "", "area") + '<p class="iv-chequeo" id=\"' + P + 'as-chq-' + k + '" aria-live="polite"></p></div></div></div>';
+  function chequeo(texto, tipo) {
+    const x = (texto || "").trim();
+    if (!x) return ["", ""];
+    if (/^(Estoy creando una skill|Revisa este SKILL\.md)/.test(x)) return ["mal", "Pegaste el mensaje que va para Claude. Aquí va lo que Claude te respondió: el bloque de código del final."];
+    if (tipo === "py") {
+      if (/Faker\(|fake\.\w+\(/.test(x) && !/simul|faker/i.test(s.scrNombre)) return ["mal", "Esto parece tu propio script de simulación. Aquí va la herramienta que escribió Claude: " + rScr() + "."];
+      if (!/^\s*def\s/m.test(x)) return ["aviso", "No parece un script completo de Python (no tiene funciones def). Copia todo el bloque de código de la respuesta."];
+      return ["ok", "Listo: se guardará como " + rScr() + " dentro de tu skill."];
+    }
+    return ["ok", "Listo: se guardará como " + rAst() + " dentro de tu skill."];
+  }
+  const adjuntoTxt = () => s.scrSinPrueba ? "" : "Adjunta tu archivo de prueba (por ejemplo tu " + esc(argumento()) + ") con el botón + del chat.";
+
+  function vista() {
+    const p = s.paso;
+    if (p === 0) return (modo === "hu"
+      ? "<h3>1 · Tu HU</h3><p>Elige tu tabla y la HU. Después, en cada recuadro, copia el texto sugerido, pégalo y ajústalo si hace falta. Nada se llena solo: tú armas tu skill.</p>" +
+        '<div class="rutas-asis"><label class="campo-asis" for="' + P + 'as-tabla">1. Tu tabla<select id="' + P + 'as-tabla" data-k="tabla"><option value="">Elige tu tabla…</option>' + TABLAS.map((x) => '<option' + (s.tabla === x ? " selected" : "") + ">" + x + "</option>").join("") + "</select></label>" +
+        '<span class="campo-asis">2. La HU</span><div class="btn-row">' + [["f01x01", "F01 + X01 · Revisar y corregir"], ["l01", "L01 · Limpiar"], ["q01", "Q01 · Consultar"], ["g01", "G01 · Graficar"]].map(([k, x]) => '<button class="btn" type="button" data-ruta="' + k + '" aria-pressed="' + (s.ruta === k) + '"' + (s.tabla ? "" : " disabled") + ">" + x + "</button>").join("") + "</div></div>"
+      : "<h3>1 · La idea</h3><p>Piensa en una tarea que repites y que quisieras que Claude hiciera siempre igual: resumir, revisar, convertir, organizar. Si la skill es para una HU del proyecto, usa el asistente A.</p>" +
+        '<div class="btn-row" style="align-items:center"><span class="muted">¿Sin idea?</span><button class="btn" type="button" data-idea="apuntes">Cargar ejemplo: resumir apuntes</button></div>') +
+      campo("nombre", "Nombre de la skill", "minúsculas y guiones, sin tildes; será el nombre de la carpeta", "", "revisar-simulacion") +
+      campo("hace", "¿Qué hace?", "empieza con un verbo: Revisa…, Convierte…, Resume…", "", "Revisa si mi simulación cumple la HU") +
+      campo("entra", "¿Qué entra?", "qué archivo o información le das", "", "mi script simular_retos.py y el archivo retos_sucio.csv") +
+      campo("sale", "¿Qué sale?", "qué te entrega", "", "una tabla con cada criterio en PASA o FALLA");
+    if (p === 1) return "<h3>2 · ¿Cuándo se activa?</h3><p>Claude decide si usa tu skill leyendo solo la <strong>description</strong>. Escribe tres situaciones con las palabras que usaría de verdad un compañero. Completa la frase \"Úsala cuando alguien…\".</p>" +
+      [0, 1, 2].map((i) => '<label class="campo-asis" for=\"' + P + 'as-sit' + i + '">Situación ' + (i + 1) + ' <span class="ayuda">Úsala cuando alguien…</span><input type="text" id=\"' + P + 'as-sit' + i + '" data-k="sit.' + i + '" value="' + esc(s.sit[i]) + '" placeholder="Ejemplo: ' + ["suba su archivo retos_sucio.csv", "pida revisar si su simulación cumple la HU", "pregunte qué le falta para cerrar la tarjeta en Kaizen"][i] + '"></label>' + sug("sit." + i)).join("") +
+      '<div class="vista-previa"><b>Así queda tu description</b><p id=\"' + P + 'as-desc"></p><span class="muted" id=\"' + P + 'as-desc-n"></span></div>';
+    if (p === 2) return "<h3>3 · Consulta (references/)</h3>" + cuando("c-r", "references/ · Claude lo lee si un paso lo pide", "Claude debe consultar algo que no sabe de memoria y que debe poder explicar: criterios, reglas del tema, un formato, ejemplos.", "Claude ya sabe hacerlo bien con el SKILL.md solo.", "<code>reglas.md</code> explica que la propina va sobre el subtotal.") +
+      siNo("refs", "¿Claude necesita consultar criterios, reglas o un formato que no sabe de memoria?", "Sí, necesita un documento de consulta", "No, no lo necesita") +
+      (s.refs === "si" ? campo("refsNombre", "Nombre del documento", "sin tildes; se guarda como .md", "", "criterios") +
+        campo("refsTema", "¿De qué trata?", "", "", "los criterios de aceptación de mi HU") +
+        (s.ruta ? '<p class="nota"><strong>Aquí pegas los criterios de tu tarjeta en Kaizen.</strong> Ábrela, copia todos los criterios de aceptación y pégalos en el recuadro, en lugar del texto "Pega aquí…". En este paso no necesitas a Claude.</p>' : "") +
+        campo("refsTexto", "Contenido del documento", s.ruta ? "pega aquí los criterios copiados de tu tarjeta en Kaizen" : "escríbelo o pégalo aquí", "area") +
+        '<details class="pedido-asis"><summary>Opcional: si no sabes cómo escribirlo, pídeselo a Claude</summary><ol class="como-usar"><li><span>Copia el mensaje y pégalo en un chat nuevo de claude.ai.</span></li><li><span>Copia lo que Claude responda y pégalo en el recuadro <strong>Contenido del documento</strong>.</span></li></ol>' +
+        '<div class="btn-row"><button class="btn" type="button" data-copiar=\"' + P + 'as-msg-refs">Copiar mensaje</button><a class="btn" href="https://claude.ai/new" target="_blank" rel="noopener">Abrir chat nuevo</a></div><pre id=\"' + P + 'as-msg-refs" class="iv-pre"></pre></details>' : "");
+    if (p === 3) {
+      const campos = campo("scrNombre", "Nombre del script", "sin tildes; se guarda como .py", "", "revisar_datos") +
+        campo("scrHace", "¿Qué debe hacer?", "lo que debe calcular o comprobar", "area", "Cuenta filas, nulos y duplicados de cada columna") +
+        campo("scrRecibe", "¿Qué recibe?", "nombra un archivo de ejemplo con su extensión", "", "retos_sucio.csv") +
+        campo("scrImprime", "¿Qué debe imprimir?", "", "", "una tabla con cada comprobación en PASA o FALLA");
+      const nota = s.ruta === "f01x01"
+        ? '<div class="nota"><strong>Ojo: aquí hay dos códigos distintos.</strong> En este paso Claude escribe la <strong>herramienta de tu skill</strong> (<code>' + esc(rScr()) + '</code>), que va dentro del ZIP. Tu propio <code>simular_' + esc(s.tabla) + '.py</code> no va aquí: lo adjuntas al final, cuando uses la skill para que lo revise.</div>'
+        : s.ruta ? '<div class="nota"><strong>En esta ruta, la herramienta es también tu entrega.</strong> El código que escriba Claude (<code>' + esc(rScr()) + '</code>) queda dentro de tu skill y, cuando la uses, la skill lo ejecuta con tus datos y te lo devuelve para guardarlo en <code>src/</code>.</div>' : "";
+      return "<h3>4 · Herramienta (scripts/)</h3>" + cuando("c-s", "scripts/ · Claude lo ejecuta", "Algo debe salir exacto y siempre igual: contar, sumar, comparar, convertir. Claude no lee el código: solo ve lo que imprime.", "La tarea es de leer, opinar o redactar, como resumir o explicar.", "<code>revisar_totales.py</code> recalcula la cuenta.") +
+        siNo("scr", "¿Hay algo que se pueda resolver contando o calculando, sin opinar?", "Sí, necesita un script", "No, no lo necesita") +
+        (s.scr === "si" ? nota +
+          campos +
+          '<label class="check-asis"><input type="checkbox" id=\"' + P + 'as-sinprueba" data-k="scrSinPrueba"' + (s.scrSinPrueba ? " checked" : "") + '><span>Todavía no tengo un archivo de prueba: que Claude invente uno con los casos que piden los criterios. Márcalo antes de copiar el mensaje.</span></label>' +
+          idaVuelta("as-msg-scr", adjuntoTxt(), "scrTexto", "Pega aquí la respuesta de Claude: el código de " + esc(rScr())) : "");
+    }
+    if (p === 4) return "<h3>5 · Molde (assets/)</h3>" + cuando("c-a", "assets/ · Se usa, no se lee", "El resultado debe tener un molde fijo: una plantilla HTML, un logo, un formato de informe.", "Basta con la respuesta en el chat.", "<code>plantilla.html</code> es el diseño de la página de la factura.") +
+      siNo("ast", "¿El resultado necesita un molde fijo, como una página con diseño propio?", "Sí, necesita un molde", "No, la respuesta en el chat es suficiente") +
+      (s.ast === "si" ? campo("astNombre", "Nombre del molde", "con extensión; por ejemplo informe.html", "", "informe.html") +
+        campo("astDescribe", "¿Cómo debe verse?", "", "area", "Una página con el resumen arriba y una tabla con colores verde y rojo") +
+        idaVuelta("as-msg-ast", "", "astTexto", "Pega aquí la respuesta de Claude: el molde " + esc(rAst())) +
+        (s.scr === "si" ? campo("scrTexto", "Si Claude también te dio una versión nueva de " + esc(rScr()) + ", pégala aquí", "reemplaza la anterior", "area") : "") : "");
+    if (p === 5) return "<h3>6 · SKILL.md</h3><p>La receta que une todo. Se armó con tus respuestas: cada paso nombra el archivo que usa. Puedes editarla directamente.</p>" +
+      campo("respuesta", "¿Cómo debe responder Claude?", "una instrucción por línea", "area", respuestaPorDefecto()) +
+      '<div class="btn-row"><button class="btn" type="button" data-accion="regenerar">Volver a armarlo con mis respuestas</button></div>' +
+      campo("skill", "Tu SKILL.md", "", "area") +
+      '<details class="pedido-asis"><summary>Opcional: pídele a Claude que lo revise</summary><ol class="como-usar"><li><span>Copia el mensaje y pégalo en un chat nuevo.</span></li><li><span>Pega la respuesta en el recuadro de arriba.</span></li></ol><div class="code"><div class="code-head"><span>Mensaje para Claude</span><button class="btn copiar" type="button" data-copiar=\"' + P + 'as-msg-skill">Copiar mensaje</button></div><pre id=\"' + P + 'as-msg-skill" class="alto" style="white-space:pre-wrap"></pre></div></details>';
+    const v = revision(), fallas = v.r.filter(([sev, ok]) => sev === "falla" && !ok).length;
+    const refsPal = Object.keys(v.a).filter((x) => x.startsWith("references/")).reduce((t, x) => t + palabras(v.a[x]), 0);
+    return "<h3>7 · Revisar y descargar</h3>" +
+      '<div class="asis-memoria"><div><b>' + palabras(v.name + " " + v.desc) + "</b>palabras siempre cargadas</div><div><b>" + palabras(v.cuerpo) + "</b>palabras al activarse</div><div><b>" + refsPal + "</b>palabras si un paso lo pide</div><div><b>0</b>de scripts/ y assets/</div></div>" +
+      '<ul class="checks">' + v.r.map(([sev, ok, t]) => '<li><span class="estado ' + (ok ? "pasa" : sev) + '">' + (ok ? "PASA" : sev === "falla" ? "FALLA" : "AVISO") + "</span><span>" + esc(t) + "</span></li>").join("") + "</ul>" +
+      '<p class="veredicto ' + (fallas ? "no" : "ok") + '">' + (fallas ? fallas + " FALLA: vuelve al paso que corresponde y corrígelo." : "Lista para descargar.") + "</p>" +
+      '<div class="btn-row"><button class="btn primario" type="button" data-accion="zip"' + (fallas ? " disabled" : "") + ">Descargar " + esc(nombre()) + '.zip</button><span class="muted" id=\"' + P + 'as-estado" aria-live="polite"></span></div>' +
+      "<h4>Y ahora</h4><ol class=\"como-usar\"><li><span>Súbela como en la sección 05: Configuración → Personalización → Skills → Agregar → Subir Skill.</span></li><li><span>Abre un chat nuevo, adjunta lo que tu skill espera recibir (" + esc(sinPunto(s.entra) || "tus archivos") + ") y pide algo como lo escribiste en tus situaciones.</span></li><li><span>Despliega los pasos y busca <strong>Cargó habilidad " + esc(nombre()) + "</strong>. Anota el resultado en tu bitácora de la sección 06.</span></li></ol>";
+  }
+
+  function arbol() {
+    const a = archivos(), lin = ['<span class="c-skill">' + esc(nombre()) + "/</span>", "├── <span class=\"c-skill\">SKILL.md</span>" + (s.skill.trim() ? "" : "  <i>paso 6</i>")];
+    const fila = (pre, clase, carpeta, eleccion, ruta) => pre + '<span class="' + clase + '">' + carpeta + "</span>" + (eleccion === "si" ? "\n" + (pre === "└── " ? "    " : "│   ") + "└── " + esc(ruta.split("/")[1]) + (a[ruta].trim() ? "" : "  <i>vacío</i>") : eleccion === "no" ? "  <i>no la necesita</i>" : "  <i>por decidir</i>");
+    lin.push(fila("├── ", "c-ref", "references/", s.refs, rRef()));
+    lin.push(fila("├── ", "c-scr", "scripts/", s.scr, rScr()));
+    lin.push(fila("└── ", "c-ast", "assets/", s.ast, rAst()));
+    $("asis-arbol").innerHTML = lin.join("\n");
+  }
+  function vivos() {
+    if ($("as-desc")) { const d = descripcion(); $("as-desc").textContent = d; $("as-desc-n").textContent = d.length + " / 1024 caracteres"; }
+    if ($("as-msg-refs")) $("as-msg-refs").textContent = msgRefs();
+    if ($("as-msg-scr")) $("as-msg-scr").textContent = msgScr();
+    if ($("as-msg-ast")) $("as-msg-ast").textContent = msgAst();
+    if ($("as-msg-skill")) $("as-msg-skill").textContent = msgSkill();
+    [["scrTexto", "py"], ["astTexto", "ast"]].forEach(([k, tipo]) => { const el = $("as-chq-" + k); if (el) { const [c, m] = chequeo(s[k], tipo); el.className = "iv-chequeo " + c; el.textContent = m; } });
+    const f = falta(s.paso), alc = alcanzable();
+    $("asis-sig").disabled = !!f || s.paso === PASOS.length - 1;
+    $("asis-ant").disabled = s.paso === 0;
+    $("asis-aviso").textContent = s.paso < PASOS.length - 1 ? f : "";
+    $("asis-pasos").querySelectorAll("button").forEach((b, i) => { b.disabled = i > alc; b.classList.toggle("hecho", i < s.paso && !falta(i)); b.setAttribute("aria-current", i === s.paso ? "step" : "false"); });
+    arbol(); guardar();
+  }
+  function pintar() {
+    if (s.paso === 5 && (!s.skillEditado || !s.skill.trim())) { s.skill = generarSkill(); s.skillEditado = false; }
+    $("asis-pasos").innerHTML = PASOS.map((t, i) => '<li><button type="button" data-ir="' + i + '">' + (i + 1) + " · " + t + "</button></li>").join("");
+    $("asis-paso").innerHTML = vista();
+    vivos();
+  }
+  function ir(p) { s.paso = Math.max(0, Math.min(PASOS.length - 1, p)); pintar(); $("asistente").scrollIntoView({ block: "start", behavior: "smooth" }); }
+
+  // ---------- eventos ----------
+  $("asis-paso").addEventListener("input", (e) => {
+    const k = e.target.dataset.k; if (!k || e.target.type === "radio") return;
+    if (e.target.type === "checkbox") { s[k] = e.target.checked; pintar(); return; }
+    if (k === "tabla") { s.tabla = e.target.value; pintar(); return; }
+    if ((k === "scrTexto" || k === "astTexto") && /^\s*```/m.test(e.target.value)) e.target.value = e.target.value.replace(/^\s*```[^\n]*\n?/gm, "");
+    if (k.startsWith("sit.")) s.sit[+k.slice(4)] = e.target.value; else s[k] = e.target.value;
+    if (k === "skill") s.skillEditado = true;
+    else if (s.paso === 5 && !s.skillEditado) { s.skill = generarSkill(); $("as-skill").value = s.skill; }
+    if (k === "scrRecibe" && $("as-adjunto")) $("as-adjunto").textContent = adjuntoTxt();
+    vivos();
+  });
+  $("asis-paso").addEventListener("change", (e) => { if (e.target.type === "radio") { s[e.target.dataset.k] = e.target.value; pintar(); } });
+  $("asis-paso").addEventListener("click", (e) => {
+    const idea = e.target.closest("[data-idea]");
+    if (idea) { s = Object.assign(VACIO(), IDEAS[idea.dataset.idea], { paso: 0, tabla: s.tabla }); pintar(); $("asis-aviso").textContent = "Idea cargada. Revisa cada respuesta y cámbiala a tu gusto."; return; }
+    const ruta = e.target.closest("[data-ruta]");
+    if (ruta && s.tabla) { s.ruta = ruta.dataset.ruta; s.skillEditado = false; pintar(); $("asis-aviso").textContent = "Ahora copia cada texto sugerido en su recuadro."; return; }
+    const acc = e.target.closest("[data-accion]"); if (!acc) return;
+    if (acc.dataset.accion === "regenerar") { s.skill = generarSkill(); s.skillEditado = false; $("as-skill").value = s.skill; vivos(); }
+    if (acc.dataset.accion === "zip") { const a = archivos(), n = nombre(); ofrecerDescarga(n + ".zip", async () => crearZip(Object.keys(a).map((r) => [n + "/" + r, a[r].replace(/\r/g, "").replace(/\s*$/, "\n")])), $("as-estado")); }
+  });
+  $("asis-pasos").addEventListener("click", (e) => { const b = e.target.closest("[data-ir]"); if (b) ir(+b.dataset.ir); });
+  $("asis-sig").addEventListener("click", () => { if (!falta(s.paso)) ir(s.paso + 1); });
+  $("asis-ant").addEventListener("click", () => ir(s.paso - 1));
+  let armado = false, reloj;
+  $("asis-reiniciar").addEventListener("click", () => {
+    const b = $("asis-reiniciar");
+    if (!armado) { armado = true; b.textContent = "Se borra todo. Clic otra vez"; reloj = setTimeout(() => { armado = false; b.textContent = "Empezar de nuevo"; }, 4000); return; }
+    clearTimeout(reloj); armado = false; b.textContent = "Empezar de nuevo"; s = VACIO(); pintar();
+  });
+  pintar();
+}
+crearAsistente("", "hu");
+crearAsistente("lb-", "libre");
+
+// 09 Quiz
+(function () {
+  const preguntas = [
+    ["¿Qué parte de la skill lee Claude en todos los mensajes?", ["Todo el SKILL.md", "Solo name y description", "Los scripts de la carpeta scripts/"], 1, "Por la carga progresiva, solo el encabezado está siempre presente. El resto se abre al activarse."],
+    ["¿Cuál de estos valores de name es válido?", ["Factura_A_Web", "factura a web", "factura-a-web"], 2, "Solo minúsculas, números y guiones. Además debe coincidir con el nombre de la carpeta."],
+    ["Quieres que Claude sepa que la propina va sobre el subtotal y lo explique. ¿Dónde lo escribes?", ["En references/reglas.md", "En assets/plantilla.html", "En el nombre del ZIP"], 0, "Es conocimiento que Claude debe leer y entender: va en references/."],
+    ["¿Cuál es la diferencia entre references/ y assets/?", ["Ninguna, son lo mismo", "references/ lo lee Claude; assets/ se usa en el resultado sin leerlo", "assets/ es solo para imágenes"], 1, "references/ es texto de consulta; assets/ son moldes: plantillas, logos, fuentes."],
+    ["¿Por qué las cuentas van en un script de Python?", ["Porque claude.ai exige un script", "Porque un script calcula exacto y siempre igual, y solo su resultado entra a la conversación", "Porque el SKILL.md no se puede leer"], 1, "Un modelo de lenguaje puede equivocarse en una suma; un script no."],
+    ["¿Cuándo se escribe el documento de diseño (DISENO.md)?", ["Antes de pedirle a Claude que programe, y se guarda fuera del ZIP", "Después de subir la skill, dentro de references/", "Nunca, Claude lo adivina"], 0, "El diseño es tu plano: con él Claude programa y tú revisas. No hace falta dentro de la skill."],
+    ["Tu skill no se activa cuando escribes \"pasa este recibo a HTML\". ¿Qué cambias primero?", ["La description, para que mencione recibos y HTML", "El script revisar_totales.py", "La plantilla"], 0, "La activación depende solo de la descripción."],
+    ["claude.ai responde \"Zip file contains path with invalid characters\". ¿Qué hiciste probablemente?", ["Usaste tildes en el SKILL.md", "Creaste el ZIP con Compress-Archive de PowerShell", "La descripción pasó de 1024 caracteres"], 1, "Compress-Archive guarda las rutas con \\. Usa tar -a -c -f en PowerShell o CMD, o el Explorador."],
+    ["¿Cómo compruebas en claude.ai que de verdad se usó tu skill?", ["Claude lo dice siempre al inicio", "Desplegando los pasos y buscando \"Cargó habilidad\" con el nombre de tu skill", "Preguntándole si la usó"], 1, "La línea \"Cargó habilidad factura-a-web\" en los pasos es la evidencia."]
+  ];
+  const form = document.getElementById("form-quiz");
+  form.innerHTML = preguntas.map(([q, ops], i) =>
+    '<div class="pregunta"><fieldset><legend>' + (i + 1) + ". " + q + "</legend>" +
+    ops.map((o, j) => '<label class="opcion"><input type="radio" name="q' + i + '" value="' + j + '"><span>' + o + "</span></label>").join("") +
+    '</fieldset><p class="retro" id="retro' + i + '"></p></div>').join("");
+  const respondidas = new Set();
+  form.addEventListener("change", (e) => {
+    const i = +e.target.name.slice(1), j = +e.target.value, [, , c, exp] = preguntas[i];
+    form.querySelectorAll('input[name="q' + i + '"]').forEach((inp) => {
+      const op = inp.closest(".opcion");
+      op.classList.toggle("bien", +inp.value === c && (inp.checked || j !== c));
+      op.classList.toggle("mal", inp.checked && +inp.value !== c);
+    });
+    document.getElementById("retro" + i).textContent = (j === c ? "Correcto. " : "Revisa: ") + exp;
+    respondidas.add(i);
+    const bien = preguntas.filter((p, k) => { const s = form.querySelector('input[name="q' + k + '"]:checked'); return s && +s.value === p[2]; }).length;
+    document.getElementById("res-quiz").textContent = respondidas.size === preguntas.length ? "Resultado: " + bien + " de " + preguntas.length + (bien === preguntas.length ? ". Listo para construir las skills del proyecto." : ". Repasa las secciones de las preguntas falladas.") : "";
+  });
+})();
+</script>
