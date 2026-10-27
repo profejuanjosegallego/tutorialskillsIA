@@ -2124,7 +2124,8 @@ function crearAsistente(P, modo) {
     if (!x) return ["", ""];
     if (/^(Estoy creando una skill|Revisa este SKILL\.md)/.test(x)) return ["mal", "Pegaste el mensaje que va para Claude. Aquí va lo que Claude te respondió: el bloque de código del final."];
     if (tipo === "py") {
-      if (/Faker\(|fake\.\w+\(/.test(x) && !/simul|faker/i.test(s.scrNombre)) return ["mal", "Esto parece tu propio script de simulación. Aquí va la herramienta que escribió Claude: " + rScr() + "."];
+      // Una simulación importa Faker; una revisora solo nombra fake.name() entre comillas para buscarlo
+      if (/^\s*(from\s+faker\s+import|import\s+faker)\b/m.test(x) && !/simul|faker/i.test(s.scrNombre)) return ["mal", "Esto parece tu propio script de simulación. Aquí va la herramienta que escribió Claude: " + rScr() + "."];
       if (!/^\s*def\s/m.test(x)) return ["aviso", "No parece un script completo de Python (no tiene funciones def). Copia todo el bloque de código de la respuesta."];
       return ["ok", "Listo: se guardará como " + rScr() + " dentro de tu skill."];
     }
