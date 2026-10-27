@@ -373,6 +373,9 @@ figcaption { font-size: 0.9rem; color: var(--muted); }
 .como-usar { counter-reset: cu; display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
 .como-usar li { display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 10px; align-items: start; font-size: 0.95rem; }
 .como-usar li::before { counter-increment: cu; content: counter(cu); width: 24px; height: 24px; border-radius: 50%; background: var(--surface-2); color: var(--accent); font: 700 0.78rem var(--font-mono); display: grid; place-items: center; }
+.lista-asis { margin: 6px 0; padding-left: 20px; list-style: disc; }
+.como-usar .lista-asis li { display: list-item; margin: 2px 0; }
+.como-usar .lista-asis li::before { content: none; counter-increment: none; }
 .leyenda-colores { display: flex; flex-wrap: wrap; gap: 12px; font-size: 0.88rem; }
 .leyenda-colores span { display: inline-flex; gap: 6px; align-items: center; }
 
@@ -1980,6 +1983,39 @@ function crearAsistente(P, modo) {
       respuesta: "Muestra las tres gráficas.\nEntrega los tres archivos PNG para descargar.\nEscribe las conclusiones que imprimió el script, respondiendo las preguntas de la HU.\nEntrega el código completo de scripts/reporte_" + T + ".py en un bloque, listo para copiar en src/reporte_" + T + ".py.\n" + cierre
     }
   });
+  // Insumos y prueba de cada HU: qué tener antes, qué adjuntar, qué escribir, qué revisar y qué hacer después
+  const PRUEBAS = (T) => ({
+    f01x01: {
+      hu: "F01 y X01", insumos: ["Los criterios de tus tarjetas F01 y X01 en Kaizen (los pegas en el paso 3)."],
+      adjunta: ["tu <code>simular_" + T + ".py</code>", "tu <code>exportar_" + T + ".py</code>, si ya lo tienes", "si ya los generaste, <code>" + T + "_sucio.csv</code>, <code>.xlsx</code> y <code>.json</code> (opcionales: si no van, Claude los genera con tus scripts)"],
+      mensaje: "Revisa mi simulación y mi exportación de " + T + " del proyecto integrador según las HU F01 y X01. Te adjunto mis scripts. Si no te llegaron los archivos " + T + "_sucio, pon mis scripts en una carpeta src/, ejecuta exportar_" + T + ".py para generarlos y luego revisa todo con la herramienta de la skill. Si no tengo exportar_" + T + ".py, créalo según la HU X01.",
+      revisa: ["Una tabla por HU (F01 y X01) con cada criterio en PASA o FALLA.", "La tabla que imprime la herramienta con los datos: filas, nulos, duplicados y formatos.", "<code>simular_" + T + ".py</code> y <code>exportar_" + T + ".py</code> corregidos y completos, cada uno en su propio bloque de código."],
+      despues: ["Reemplaza tus dos archivos de <code>src/</code> por los corregidos.", "Ejecuta <code>python src/simular_" + T + ".py</code> y <code>python src/exportar_" + T + ".py</code>.", "Comprueba que en <code>data/crudo/</code> aparecen <code>" + T + "_sucio.csv</code>, <code>.xlsx</code> y <code>.json</code>: son los insumos de la HU L01."]
+    },
+    l01: {
+      hu: "L01", insumos: ["Los criterios de tu tarjeta L01 en Kaizen (los pegas en el paso 3).", "<code>data/crudo/" + T + "_sucio.csv</code>, que genera tu exportador de la HU X01 (lo adjuntas en el paso 4 y al probar)."],
+      adjunta: ["<code>" + T + "_sucio.csv</code> (está en <code>data/crudo/</code>)"],
+      mensaje: "Limpia los datos de " + T + " del proyecto integrador según la HU L01. Te adjunto " + T + "_sucio.csv.",
+      revisa: ["Un resumen: cuántas filas había, cuántas quedaron y qué se corrigió.", "El diagnóstico antes y después de limpiar (nulos y duplicados).", "El archivo <code>" + T + "_limpio.csv</code> para descargar.", "El código completo de <code>limpiar_" + T + ".py</code>.", "Si algún criterio no se cumplió, la explicación de por qué."],
+      despues: ["Guarda el código en <code>src/limpiar_" + T + ".py</code>.", "Ejecuta <code>python src/limpiar_" + T + ".py data/crudo/" + T + "_sucio.csv</code>.", "Comprueba que aparece <code>data/limpio/" + T + "_limpio.csv</code>: es el insumo de Q01 y G01."]
+    },
+    q01: {
+      hu: "Q01", insumos: ["Los criterios de tu tarjeta Q01 en Kaizen, con las cinco consultas (los pegas en el paso 3).", "<code>data/limpio/" + T + "_limpio.csv</code>, que genera tu limpieza de la HU L01."],
+      adjunta: ["<code>" + T + "_limpio.csv</code> (está en <code>data/limpio/</code>)"],
+      mensaje: "Haz las cinco consultas de la HU Q01 sobre " + T + " del proyecto integrador. Te adjunto " + T + "_limpio.csv.",
+      revisa: ["Las cinco consultas, cada una con su pregunta y su resultado, en orden.", "Los cinco archivos <code>" + T + "_consulta_N.csv</code> para descargar.", "El código completo de <code>consultas_" + T + ".py</code>.", "Si una consulta sale vacía, la explicación de por qué (por ejemplo, un valor que tu tabla no tiene)."],
+      despues: ["Guarda el código en <code>src/consultas_" + T + ".py</code>.", "Ejecuta <code>python src/consultas_" + T + ".py data/limpio/" + T + "_limpio.csv</code>.", "Comprueba que aparecen los cinco CSV de las consultas."]
+    },
+    g01: {
+      hu: "G01", insumos: ["Los criterios de tu tarjeta G01 en Kaizen, con las tres gráficas y las preguntas de las conclusiones (los pegas en el paso 3).", "<code>data/limpio/" + T + "_limpio.csv</code>, que genera tu limpieza de la HU L01."],
+      adjunta: ["<code>" + T + "_limpio.csv</code> (está en <code>data/limpio/</code>)"],
+      mensaje: "Haz las tres gráficas y las conclusiones de la HU G01 sobre " + T + " del proyecto integrador. Te adjunto " + T + "_limpio.csv.",
+      revisa: ["Las tres gráficas, cada una con título y nombre en los dos ejes.", "Los tres archivos PNG para descargar.", "Las conclusiones, respondiendo las preguntas de la HU.", "El código completo de <code>reporte_" + T + ".py</code>."],
+      despues: ["Guarda el código en <code>src/reporte_" + T + ".py</code>.", "Ejecuta <code>python src/reporte_" + T + ".py data/limpio/" + T + "_limpio.csv</code>.", "Comprueba que aparecen las tres gráficas en <code>reportes/</code>."]
+    }
+  });
+  const PRUEBA = () => (modo === "hu" && s.tabla && s.ruta) ? PRUEBAS(s.tabla)[s.ruta] : null;
+  const lista = (xs) => "<ul class='lista-asis'>" + xs.map((x) => "<li>" + x + "</li>").join("") + "</ul>";
   const PASOS = ["La idea", "¿Cuándo se activa?", "Consulta · references/", "Herramienta · scripts/", "Molde · assets/", "Receta · SKILL.md", "Descargar"];
   let s = Object.assign(VACIO(), almacen.leer("taller-asistente-" + modo, {}));
   const guardar = () => almacen.guardar("taller-asistente-" + modo, s);
@@ -2155,7 +2191,8 @@ function crearAsistente(P, modo) {
     if (p === 0) return (modo === "hu"
       ? "<h3>1 · Tu HU</h3><p>Elige tu tabla y la HU. Después, en cada recuadro, copia el texto sugerido, pégalo y ajústalo si hace falta. Nada se llena solo: tú armas tu skill.</p>" +
         '<div class="rutas-asis"><label class="campo-asis" for="' + P + 'as-tabla">1. Tu tabla<select id="' + P + 'as-tabla" data-k="tabla"><option value="">Elige tu tabla…</option>' + TABLAS.map((x) => '<option' + (s.tabla === x ? " selected" : "") + ">" + x + "</option>").join("") + "</select></label>" +
-        '<span class="campo-asis">2. La HU</span><div class="btn-row">' + [["f01x01", "F01 + X01 · Revisar y corregir"], ["l01", "L01 · Limpiar"], ["q01", "Q01 · Consultar"], ["g01", "G01 · Graficar"]].map(([k, x]) => '<button class="btn" type="button" data-ruta="' + k + '" aria-pressed="' + (s.ruta === k) + '"' + (s.tabla ? "" : " disabled") + ">" + x + "</button>").join("") + "</div></div>"
+        '<span class="campo-asis">2. La HU</span><div class="btn-row">' + [["f01x01", "F01 + X01 · Revisar y corregir"], ["l01", "L01 · Limpiar"], ["q01", "Q01 · Consultar"], ["g01", "G01 · Graficar"]].map(([k, x]) => '<button class="btn" type="button" data-ruta="' + k + '" aria-pressed="' + (s.ruta === k) + '"' + (s.tabla ? "" : " disabled") + ">" + x + "</button>").join("") + "</div></div>" +
+        (PRUEBA() ? '<div class="nota"><strong>Insumos para la HU ' + PRUEBA().hu + ".</strong> Antes de seguir, ten a mano:" + lista(PRUEBA().insumos) + "Al final, en el paso 7, el asistente te dice cómo probar la skill.</div>" : "")
       : "<h3>1 · La idea</h3><p>Piensa en una tarea que repites y que quisieras que Claude hiciera siempre igual: resumir, revisar, convertir, organizar. Si la skill es para una HU del proyecto, usa el asistente A.</p>" +
         '<div class="btn-row" style="align-items:center"><span class="muted">¿Sin idea?</span><button class="btn" type="button" data-idea="apuntes">Cargar ejemplo: resumir apuntes</button></div>') +
       campo("nombre", "Nombre de la skill", "minúsculas y guiones, sin tildes; será el nombre de la carpeta", "", "revisar-simulacion") +
@@ -2222,7 +2259,18 @@ function crearAsistente(P, modo) {
       '<ul class="checks">' + v.r.map(([sev, ok, t]) => '<li><span class="estado ' + (ok ? "pasa" : sev) + '">' + (ok ? "PASA" : sev === "falla" ? "FALLA" : "AVISO") + "</span><span>" + esc(t) + "</span></li>").join("") + "</ul>" +
       '<p class="veredicto ' + (fallas ? "no" : "ok") + '">' + (fallas ? fallas + " FALLA: vuelve al paso que corresponde y corrígelo." : "Lista para descargar.") + "</p>" +
       '<div class="btn-row"><button class="btn primario" type="button" data-accion="zip"' + (fallas ? " disabled" : "") + ">Descargar " + esc(nombre()) + '.zip</button><span class="muted" id=\"' + P + 'as-estado" aria-live="polite"></span></div>' +
-      "<h4>Y ahora</h4><ol class=\"como-usar\"><li><span>Súbela como en la sección 05: Configuración → Personalización → Skills → Agregar → Subir Skill.</span></li><li><span>Abre un chat nuevo, adjunta lo que tu skill espera recibir (" + esc(sinPunto(s.entra) || "tus archivos") + ") y pide algo como lo escribiste en tus situaciones.</span></li><li><span>Despliega los pasos y busca <strong>Cargó habilidad " + esc(nombre()) + "</strong>. Anota el resultado en tu bitácora de la sección 06.</span></li></ol>";
+      (PRUEBA() ? comoProbar(PRUEBA()) :
+      "<h4>Y ahora</h4><ol class=\"como-usar\"><li><span>Súbela como en la sección 05: Configuración → Personalización → Skills → Agregar → Subir Skill.</span></li><li><span>Abre un chat nuevo, adjunta lo que tu skill espera recibir (" + esc(sinPunto(s.entra) || "tus archivos") + ") y pide algo como lo escribiste en tus situaciones.</span></li><li><span>Despliega los pasos y busca <strong>Cargó habilidad " + esc(nombre()) + "</strong>. Anota el resultado en tu bitácora de la sección 06.</span></li></ol>");
+  }
+  function comoProbar(t) {
+    const n = esc(nombre());
+    return '<h4>Cómo probar tu skill · HU ' + t.hu + '</h4><ol class="como-usar paso-a-paso">' +
+      "<li><span><b>Súbela.</b> En claude.ai: Configuración → Personalización → Skills → Agregar → Subir Skill → <code>" + n + ".zip</code>. Si ya habías subido una versión, acepta <strong>Reemplazar</strong>.</span></li>" +
+      "<li><span><b>Abre un chat nuevo y adjunta</b> con el botón <strong>+</strong>:" + lista(t.adjunta) + "</span></li>" +
+      '<li><span><b>Copia este mensaje y envíalo.</b><div class="code"><div class="code-head"><span>Mensaje para probar la skill</span><button class="btn copiar" type="button" data-copiar="' + P + 'as-msg-prueba">Copiar mensaje</button></div><pre id="' + P + 'as-msg-prueba" style="white-space:pre-wrap">' + esc(t.mensaje) + "</pre></div></span></li>" +
+      "<li><span><b>Confirma que se usó.</b> Despliega los pasos de la respuesta y busca <strong>Cargó habilidad " + n + "</strong>. Si no aparece, escribe al inicio del mensaje <em>Usa la skill " + n + ".</em> y envíalo otra vez.</span></li>" +
+      "<li><span><b>Revisa que la respuesta tenga:</b>" + lista(t.revisa) + "Si falta algo, pídelo en el mismo chat; si siempre falta, ajusta la receta en el paso 6 y vuelve a subir el ZIP.</span></li>" +
+      "<li><span><b>Después, en tu computador:</b>" + lista(t.despues.concat(["Sube los cambios a GitHub y mueve la tarjeta " + t.hu + " a <strong>Hecho</strong> en Kaizen."])) + "</span></li></ol>";
   }
 
   function arbol() {
