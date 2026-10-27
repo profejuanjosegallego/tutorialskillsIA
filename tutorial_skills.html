@@ -324,6 +324,7 @@ figcaption { font-size: 0.9rem; color: var(--muted); }
 .opciones-asis label { display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: 8px; align-items: start; padding: 10px 12px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); font-weight: 600; cursor: pointer; }
 .opciones-asis label:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
 .opciones-asis input { margin-top: 4px; }
+.opciones-asis .opc-det { font-weight: 400; color: var(--muted); }
 .tabla-rutas table { min-width: 820px; }
 .tabla-rutas td:first-child, .tabla-rutas td:nth-child(2) { white-space: nowrap; }
 .traza td:first-child { font-family: var(--font-mono); color: var(--accent); width: 32px; }
@@ -1910,9 +1911,9 @@ function crearAsistente(P, modo) {
   const esc = (x) => String(x == null ? "" : x).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   const VACIO = () => ({
     paso: 0, nombre: "", hace: "", entra: "", sale: "", sit: ["", "", ""],
-    refs: "", refsNombre: "", refsTema: "", refsTexto: "",
-    scr: "", scrNombre: "", scrHace: "", scrRecibe: "", scrImprime: "", scrTexto: "", scrSinPrueba: false,
-    ast: "", astNombre: "", astDescribe: "", astTexto: "",
+    refs: "", refsOrigen: "", refsNombre: "", refsTema: "", refsTexto: "",
+    scr: "", scrOrigen: "", scrNombre: "", scrHace: "", scrRecibe: "", scrImprime: "", scrTexto: "", scrSinPrueba: false,
+    ast: "", astOrigen: "", astNombre: "", astDescribe: "", astTexto: "",
     respuesta: "", skill: "", skillEditado: false, tabla: "", ruta: ""
   });
   const IDEAS = {
@@ -1992,6 +1993,9 @@ function crearAsistente(P, modo) {
   const rAst = () => { const n = slug(s.astNombre, "plantilla"); return "assets/" + (/\.[a-z0-9]+$/.test(n) ? n : n + ".html"); };
   const argumento = () => { const m = (s.scrRecibe || "").match(/[\w.-]+\.\w+/); return m ? m[0] : "entrada.txt"; };
   const sinPunto = (x) => x.trim().replace(/[.\s]+$/, "");
+  // De dónde sale cada archivo: el asistente A ya lo decide; en el B lo elige el estudiante
+  const origen = (k) => modo === "hu" ? (k === "refs" ? "propio" : "claude") : s[k + "Origen"];
+  const esHtml = () => /\.html?$/.test(rAst());
   function descripcion() {
     const sits = s.sit.map(sinPunto).filter(Boolean);
     const lista = sits.length > 1 ? sits.slice(0, -1).join(", ") + " o " + sits[sits.length - 1] : (sits[0] || "…");
@@ -2007,17 +2011,19 @@ function crearAsistente(P, modo) {
   function generarSkill() {
     const P = []; let k = 1;
     const titulo = nombre().replace(/-/g, " ").replace(/^./, (c) => c.toUpperCase());
-    P.push("## Paso " + k++ + ". Revisar lo que llegó\n\nRevisa " + (sinPunto(s.entra) || "lo que subió la persona") + ". Si falta algo, pídelo en una sola pregunta.");
+    P.push("## Paso " + k++ + ". Revisar lo que llegó\n\nRevisa " + (sinPunto(s.entra) || "lo que subió la persona") + "." + (modo === "libre" ? " Puede llegar como archivo adjunto o como texto pegado en el chat: sirve igual." : "") + " Si falta algo, pídelo en una sola pregunta.");
     if (s.refs === "si") P.push("## Paso " + k++ + ". Consultar la guía\n\nLee `" + rRef() + "`" + (s.refsTema.trim() ? ": tiene " + sinPunto(s.refsTema) : "") + ". No inventes reglas que no estén ahí.");
     if (s.scr === "si") P.push("## Paso " + k++ + ". Procesar con el script\n\n```bash\npython " + rScr() + " " + argumento() + (s.ast === "si" ? " --salida resultado.html" : "") + "\n```\n\n" +
       (s.scrHace.trim() ? sinPunto(s.scrHace) + ". " : "") + "Usa las rutas reales de los archivos que subió la persona. Copia lo que imprime el script sin cambiar ningún resultado. Si no llegó el archivo que necesita el script, dilo y sigue con lo demás." +
       (s.ast === "si" ? " Con `--salida`, el script llena el molde `" + rAst() + "` y crea `resultado.html`." : ""));
-    if (s.ast === "si" && s.scr !== "si") P.push("## Paso " + k++ + ". Armar el resultado\n\nCopia el molde `" + rAst() + "`, reemplaza `__DATOS__` por los datos y entrega el archivo. No cambies su diseño.");
+    if (s.ast === "si" && s.scr !== "si") P.push("## Paso " + k++ + ". Armar el resultado\n\nCopia el molde `" + rAst() + "`, reemplaza `__DATOS__` por los datos y entrega el archivo. No cambies su diseño." + (modo === "libre" ? " Si falta un dato, déjalo vacío y avísalo; no lo inventes." : ""));
     const resp = (s.respuesta.trim() || respuestaPorDefecto()).split("\n").map((l) => l.trim()).filter(Boolean).map((l, i) => (i + 1) + ". " + l.replace(/^\d+[.)]\s*/, "")).join("\n");
     P.push("## Paso " + k++ + ". Responder\n\nResponde en español, en este orden:\n\n" + resp);
     return "---\nname: " + nombre() + "\ndescription: " + descripcion() + "\n---\n\n# " + titulo + "\n\n" + (sinPunto(s.hace) || "Qué hace la skill") + ". Trabaja en este orden y no te saltes pasos.\n\n" + P.join("\n\n") + "\n";
   }
-  const respuestaPorDefecto = () => "Empieza con la conclusión en una frase.\nMuestra " + (sinPunto(s.sale) || "el resultado") + ".\nExplica cada problema con el valor encontrado y el esperado.\nTermina con el siguiente paso que debe dar la persona.";
+  const respuestaPorDefecto = () => modo === "libre"
+    ? "Empieza con una frase que diga qué entregas.\nEntrega " + (sinPunto(s.sale) || "el resultado") + ".\nSi faltó algún dato, dilo en una lista corta; no lo inventes.\nTermina con el siguiente paso que debe dar la persona."
+    : "Empieza con la conclusión en una frase.\nMuestra " + (sinPunto(s.sale) || "el resultado") + ".\nExplica cada problema con el valor encontrado y el esperado.\nTermina con el siguiente paso que debe dar la persona.";
 
   // ---------- mensajes para Claude ----------
   const intro = () => "Estoy creando una skill para claude.ai llamada \"" + nombre() + "\". " + (sinPunto(s.hace) || "") + ".";
@@ -2025,7 +2031,7 @@ function crearAsistente(P, modo) {
     return intro() + " Escribe el archivo " + rRef() + ": un documento de consulta que Claude lee cuando un paso de la skill lo pide." +
       (s.refsTema.trim() ? " Tema: " + sinPunto(s.refsTema) + "." : "") +
       " Debe ser corto, claro, en español, con títulos y listas, y tener solo lo que la skill necesita." +
-      (s.refsTexto.trim() ? "\n\nEsto es lo que ya tengo; úsalo como base:\n----------\n" + s.refsTexto.trim() + "\n----------" : "") +
+      (s.refsTexto.trim() && origen("refs") !== "claude" ? "\n\nEsto es lo que ya tengo; úsalo como base:\n----------\n" + s.refsTexto.trim() + "\n----------" : "") +
       "\n\nResponde solo con el contenido del archivo, en un bloque de código.";
   }
   function msgScr() {
@@ -2084,7 +2090,8 @@ function crearAsistente(P, modo) {
     if (p === 0 && modo === "hu" && (!s.tabla || !s.ruta)) return "Elige tu tabla y tu HU.";
     if (p === 0) return !s.nombre.trim() ? "Escribe el nombre de la skill." : !nombreValido(s.nombre.trim()) ? "El nombre solo puede tener minúsculas, números y guiones." : !s.hace.trim() ? "Escribe qué hace la skill." : !s.entra.trim() || !s.sale.trim() ? "Escribe qué entra y qué sale." : "";
     if (p === 1) return s.sit.some((x) => x.trim()) ? "" : "Escribe al menos una situación.";
-    if (p === 2) return !s.refs ? "Responde la pregunta." : s.refs === "si" && !s.refsTexto.trim() ? "Escribe o pega el contenido del documento." : s.refs === "si" && /Pega aquí/.test(s.refsTexto) ? "Pega tus criterios de Kaizen y borra el texto \"Pega aquí…\"." : "";
+    if (p >= 2 && p <= 4) { const k = ["refs", "scr", "ast"][p - 2]; if (s[k] === "si" && !origen(k)) return "Elige cómo vas a conseguir el archivo: pedírselo a Claude o pegar el tuyo."; }
+    if (p === 2) return !s.refs ? "Responde la pregunta." : s.refs === "si" && chequeo(s.refsTexto, "md")[0] === "mal" ? chequeo(s.refsTexto, "md")[1] : s.refs === "si" && !s.refsTexto.trim() ? "Escribe o pega el contenido del documento." : s.refs === "si" && /Pega aquí/.test(s.refsTexto) ? "Pega tus criterios de Kaizen y borra el texto \"Pega aquí…\"." : "";
     if (p === 3) return !s.scr ? "Responde la pregunta." : s.scr === "si" && !s.scrHace.trim() ? "Escribe qué debe hacer el script." : s.scr === "si" && !s.scrTexto.trim() ? "Falta el recuadro B: pega la respuesta de Claude (el código)." : s.scr === "si" && chequeo(s.scrTexto, "py")[0] === "mal" ? chequeo(s.scrTexto, "py")[1] : "";
     if (p === 4) return !s.ast ? "Responde la pregunta." : s.ast === "si" && !s.astTexto.trim() ? "Falta el recuadro B: pega la respuesta de Claude (el molde)." : s.ast === "si" && chequeo(s.astTexto, "ast")[0] === "mal" ? chequeo(s.astTexto, "ast")[1] : "";
     if (p === 5) return s.skill.trim() ? "" : "Falta el SKILL.md.";
@@ -2121,8 +2128,25 @@ function crearAsistente(P, modo) {
       if (!/^\s*def\s/m.test(x)) return ["aviso", "No parece un script completo de Python (no tiene funciones def). Copia todo el bloque de código de la respuesta."];
       return ["ok", "Listo: se guardará como " + rScr() + " dentro de tu skill."];
     }
-    return ["ok", "Listo: se guardará como " + rAst() + " dentro de tu skill."];
+    if (tipo === "md") return ["ok", "Listo: se guardará como " + rRef() + " dentro de tu skill."];
+    if (esHtml()) {
+      if (!/<\/html>\s*$/i.test(x)) return ["mal", "El molde parece cortado: no termina en </html> (llegaron " + x.length.toLocaleString("es") + " caracteres). Vuelve a copiar el archivo completo; si viene de Claude, usa el botón de copiar del bloque de código."];
+      if (!/__DATOS__/.test(x)) return ["mal", "El molde no tiene el hueco __DATOS__, que es donde Claude pone los datos. Pídele a Claude que lo agregue o escríbelo tú en el lugar donde van los datos."];
+    }
+    return ["ok", "Listo: se guardará como " + rAst() + " dentro de tu skill (" + x.length.toLocaleString("es") + " caracteres)."];
   }
+  const pegado = (k, etiqueta, ayuda) => campo(k, etiqueta, ayuda, "area") + '<p class="iv-chequeo" id="' + P + 'as-chq-' + k + '" aria-live="polite"></p>';
+  // Asistente B: dos caminos para cada archivo y para qué le sirve a esta skill
+  const caminos = (k, ext, ruta, sirve) => '<fieldset class="pregunta-asis"><legend>¿Cómo vas a conseguir <code>' + esc(ruta) + "</code>?</legend>" +
+    '<p class="nota"><strong>Esto ayudaría a</strong> ' + esc(sirve) + "</p>" +
+    '<div class="opciones-asis">' +
+    '<label><input type="radio" name="' + P + "as-" + k + 'Origen" data-k="' + k + 'Origen" value="claude"' + (s[k + "Origen"] === "claude" ? " checked" : "") + "><span><strong>Pídele a Claude que genere el archivo " + ext + "</strong><br><span class='opc-det'>Respondes unas preguntas, el asistente arma el mensaje y tú pegas aquí lo que Claude te devuelva.</span></span></label>" +
+    '<label><input type="radio" name="' + P + "as-" + k + 'Origen" data-k="' + k + 'Origen" value="propio"' + (s[k + "Origen"] === "propio" ? " checked" : "") + "><span><strong>Ya lo tengo: pego aquí mi " + (ext === ".md" ? "texto" : "código") + "</strong><br><span class='opc-det'>Si ya lo escribiste tú, lo tienes de otra clase o te lo dio Claude en otro chat.</span></span></label>" +
+    "</div></fieldset>";
+  const loQueSale = () => sinPunto(s.sale) || "el resultado";
+  const sirveRefs = () => "que " + loQueSale() + " siga siempre tus reglas, tu formato o tus ejemplos: Claude consulta este documento en lugar de inventarlos.";
+  const sirveScr = () => "que los cálculos de " + loQueSale() + " salgan exactos y siempre iguales: los hace el código y no Claude de memoria. Claude solo ve lo que el script imprime.";
+  const sirveAst = () => "que " + loQueSale() + " tenga siempre el mismo diseño: Claude no dibuja la página cada vez, solo copia el molde y llena el hueco __DATOS__ con los datos.";
   const adjuntoTxt = () => s.scrSinPrueba ? "" : "Adjunta tu archivo de prueba (por ejemplo tu " + esc(argumento()) + ") con el botón + del chat.";
 
   function vista() {
@@ -2142,7 +2166,12 @@ function crearAsistente(P, modo) {
       '<div class="vista-previa"><b>Así queda tu description</b><p id=\"' + P + 'as-desc"></p><span class="muted" id=\"' + P + 'as-desc-n"></span></div>';
     if (p === 2) return "<h3>3 · Consulta (references/)</h3>" + cuando("c-r", "references/ · Claude lo lee si un paso lo pide", "Claude debe consultar algo que no sabe de memoria y que debe poder explicar: criterios, reglas del tema, un formato, ejemplos.", "Claude ya sabe hacerlo bien con el SKILL.md solo.", "<code>reglas.md</code> explica que la propina va sobre el subtotal.") +
       siNo("refs", "¿Claude necesita consultar criterios, reglas o un formato que no sabe de memoria?", "Sí, necesita un documento de consulta", "No, no lo necesita") +
-      (s.refs === "si" ? campo("refsNombre", "Nombre del documento", "sin tildes; se guarda como .md", "", "criterios") +
+      (s.refs === "si" && modo === "libre" ? caminos("refs", ".md", rRef(), sirveRefs()) +
+        (origen("refs") ? campo("refsNombre", "Nombre del documento", "sin tildes; se guarda como .md", "", "formato") +
+          campo("refsTema", "¿De qué trata?", "qué reglas, formato o ejemplos debe consultar Claude", "", "cómo debe ser el resumen y cómo escribir buenas preguntas") : "") +
+        (origen("refs") === "claude" ? idaVuelta("as-msg-refs", "", "refsTexto", "Pega aquí la respuesta de Claude: el contenido de " + esc(rRef())) : "") +
+        (origen("refs") === "propio" ? pegado("refsTexto", "Pega aquí tu documento", "texto en Markdown: títulos con #, listas con -") : "")
+      : s.refs === "si" ? campo("refsNombre", "Nombre del documento", "sin tildes; se guarda como .md", "", "criterios") +
         campo("refsTema", "¿De qué trata?", "", "", "los criterios de aceptación de mi HU") +
         (s.ruta ? '<p class="nota"><strong>Aquí pegas los criterios de tu tarjeta en Kaizen.</strong> Ábrela, copia todos los criterios de aceptación y pégalos en el recuadro, en lugar del texto "Pega aquí…". En este paso no necesitas a Claude.</p>' : "") +
         campo("refsTexto", "Contenido del documento", s.ruta ? "pega aquí los criterios copiados de tu tarjeta en Kaizen" : "escríbelo o pégalo aquí", "area") +
@@ -2158,14 +2187,25 @@ function crearAsistente(P, modo) {
         : s.ruta ? '<div class="nota"><strong>En esta ruta, la herramienta es también tu entrega.</strong> El código que escriba Claude (<code>' + esc(rScr()) + '</code>) queda dentro de tu skill y, cuando la uses, la skill lo ejecuta con tus datos y te lo devuelve para guardarlo en <code>src/</code>.</div>' : "";
       return "<h3>4 · Herramienta (scripts/)</h3>" + cuando("c-s", "scripts/ · Claude lo ejecuta", "Algo debe salir exacto y siempre igual: contar, sumar, comparar, convertir. Claude no lee el código: solo ve lo que imprime.", "La tarea es de leer, opinar o redactar, como resumir o explicar.", "<code>revisar_totales.py</code> recalcula la cuenta.") +
         siNo("scr", "¿Hay algo que se pueda resolver contando o calculando, sin opinar?", "Sí, necesita un script", "No, no lo necesita") +
-        (s.scr === "si" ? nota +
+        (s.scr === "si" && modo === "libre" ? caminos("scr", ".py", rScr(), sirveScr()) +
+          (origen("scr") === "propio" ? campo("scrNombre", "Nombre del script", "sin tildes; se guarda como .py", "", "revisar_datos") +
+            campo("scrHace", "¿Qué hace tu script?", "en una frase; va en el SKILL.md", "", "Cuenta filas, nulos y duplicados de cada columna") +
+            campo("scrRecibe", "¿Qué archivo recibe?", "nombra un archivo de ejemplo con su extensión", "", "notas.csv") +
+            pegado("scrTexto", "Pega aquí tu código", "el archivo .py completo") : "")
+        : "") +
+        (s.scr === "si" && origen("scr") === "claude" ? nota +
           campos +
           '<label class="check-asis"><input type="checkbox" id=\"' + P + 'as-sinprueba" data-k="scrSinPrueba"' + (s.scrSinPrueba ? " checked" : "") + '><span>Todavía no tengo un archivo de prueba: que Claude invente uno con los casos que piden los criterios. Márcalo antes de copiar el mensaje.</span></label>' +
           idaVuelta("as-msg-scr", adjuntoTxt(), "scrTexto", "Pega aquí la respuesta de Claude: el código de " + esc(rScr())) : "");
     }
     if (p === 4) return "<h3>5 · Molde (assets/)</h3>" + cuando("c-a", "assets/ · Se usa, no se lee", "El resultado debe tener un molde fijo: una plantilla HTML, un logo, un formato de informe.", "Basta con la respuesta en el chat.", "<code>plantilla.html</code> es el diseño de la página de la factura.") +
       siNo("ast", "¿El resultado necesita un molde fijo, como una página con diseño propio?", "Sí, necesita un molde", "No, la respuesta en el chat es suficiente") +
-      (s.ast === "si" ? campo("astNombre", "Nombre del molde", "con extensión; por ejemplo informe.html", "", "informe.html") +
+      (s.ast === "si" && modo === "libre" ? caminos("ast", "." + (rAst().split(".").pop()), rAst(), sirveAst()) +
+        (origen("ast") === "propio" ? campo("astNombre", "Nombre del molde", "con extensión; por ejemplo portafolio.html", "", "informe.html") +
+          (esHtml() ? '<p class="nota">Tu molde debe tener el texto <code>__DATOS__</code> justo donde van los datos: ahí los pone Claude cada vez que use la skill.</p>' : "") +
+          pegado("astTexto", "Pega aquí tu molde", "el archivo completo, de la primera a la última línea") : "")
+      : "") +
+      (s.ast === "si" && origen("ast") === "claude" ? campo("astNombre", "Nombre del molde", "con extensión; por ejemplo informe.html", "", "informe.html") +
         campo("astDescribe", "¿Cómo debe verse?", "", "area", "Una página con el resumen arriba y una tabla con colores verde y rojo") +
         idaVuelta("as-msg-ast", "", "astTexto", "Pega aquí la respuesta de Claude: el molde " + esc(rAst())) +
         (s.scr === "si" ? campo("scrTexto", "Si Claude también te dio una versión nueva de " + esc(rScr()) + ", pégala aquí", "reemplaza la anterior", "area") : "") : "");
@@ -2198,7 +2238,7 @@ function crearAsistente(P, modo) {
     if ($("as-msg-scr")) $("as-msg-scr").textContent = msgScr();
     if ($("as-msg-ast")) $("as-msg-ast").textContent = msgAst();
     if ($("as-msg-skill")) $("as-msg-skill").textContent = msgSkill();
-    [["scrTexto", "py"], ["astTexto", "ast"]].forEach(([k, tipo]) => { const el = $("as-chq-" + k); if (el) { const [c, m] = chequeo(s[k], tipo); el.className = "iv-chequeo " + c; el.textContent = m; } });
+    [["refsTexto", "md"], ["scrTexto", "py"], ["astTexto", "ast"]].forEach(([k, tipo]) => { const el = $("as-chq-" + k); if (el) { const [c, m] = chequeo(s[k], tipo); el.className = "iv-chequeo " + c; el.textContent = m; } });
     const f = falta(s.paso), alc = alcanzable();
     $("asis-sig").disabled = !!f || s.paso === PASOS.length - 1;
     $("asis-ant").disabled = s.paso === 0;
